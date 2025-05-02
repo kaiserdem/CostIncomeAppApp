@@ -8,7 +8,8 @@ struct TransactionListView: View {
     @State private var showSettings = false
     
     let types: [TransactionType] = [.costs, .income]
-    let costsCategories = ["Food", "Homeву", "Heahвуцв", "Enr", "Otherвуцвуц", "andвуву", "2lth", "2Enter", "Other Other Other Other"]
+    let costsCategories = ["Food", "Home and Life", "Health", "Entertainment", "Other"]
+    //["Food", "Homeву", "Heahвуцв", "Enr", "Otherвуцвуц", "andвуву", "2lth", "2Enter", "Other Other Other Other"]
     
     var categorySums: [String: Double] {
         var dict: [String: Double] = [:]
@@ -26,88 +27,75 @@ struct TransactionListView: View {
                     .aspectRatio(contentMode: .fill)
                     .edgesIgnoringSafeArea(.all)
                 
-                ScrollView {
-                    VStack(spacing: 24) {
-                        // Кнопка завжди зверху
-                        HStack {
-                            Spacer()
-                            Button(action: { showSettings = true }) {
-                                Image("settttttting")
-                                    .resizable()
-                                    .frame(width: 42, height: 42)
-                            }
-                            .padding(.top, 12)
-                            .padding(.trailing, 16)
-                        }
-                        // Свайп тільки для назви і суми
-                        TabView(selection: $selectedTypeIndex) {
-                            ForEach(0..<types.count, id: \ .self) { idx in
-                                VStack(spacing: 12) {
-                                    Text(types[idx] == .costs ? "Costs" : "Income")
-                                        .font(.title2)
-                                        .foregroundColor(.white)
-                                    Text(balanceString(for: types[idx]))
-                                        .font(.system(size: 48, weight: .bold, design: .rounded))
-                                        .foregroundColor(.white)
-                                }
-                                .tag(idx)
-                            }
-                        }
-                        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                        .frame(height: 120)
-                        
-                        CustomIndicator(selectedIndex: $selectedTypeIndex)
-                            .padding(.bottom, 8)
-                        
-                        // Блок категорій
-                        CategoriesWrapView(categories: costsCategories, sums: categorySums, addCategory: { /* поки без логіки */ })
-                            .padding(.top, 8)
-                        
-                        Button(action: { /* логіка для show all */ }) {
-                            Image("showalllllll")
+                VStack(spacing: 24) {
+                    // Кнопка завжди зверху
+                    HStack {
+                        Spacer()
+                        Button(action: { showSettings = true }) {
+                            Image("settttttting")
                                 .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(maxWidth: .infinity, minHeight: 48, maxHeight: 48)
-                                .padding(.horizontal)
+                                .frame(width: 42, height: 42)
                         }
-                        
-                        // Список транзакцій
-                        VStack(spacing: 0) {
+                        .padding(.top, 12)
+                        .padding(.trailing, 16)
+                    }
+                    // Свайп тільки для назви і суми
+                    TabView(selection: $selectedTypeIndex) {
+                        ForEach(0..<types.count, id: \ .self) { idx in
+                            VStack(spacing: 12) {
+                                Text(types[idx] == .costs ? "Costs" : "Income")
+                                    .font(.title2)
+                                    .foregroundColor(.white)
+                                Text(balanceString(for: types[idx]))
+                                    .font(.system(size: 48, weight: .bold, design: .rounded))
+                                    .foregroundColor(.white)
+                            }
+                            .tag(idx)
+                        }
+                    }
+                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                    .frame(height: 120)
+                    
+                    CustomIndicator(selectedIndex: $selectedTypeIndex)
+                        .padding(.bottom, 8)
+                    
+                    // Блок категорій
+                    CategoriesWrapView(categories: costsCategories, sums: categorySums, addCategory: { /* поки без логіки */ })
+                        .padding(.top, 8)
+                    
+                    Button(action: { /* логіка для show all */ }) {
+                        Image("showalllllll")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(maxWidth: .infinity, minHeight: 48, maxHeight: 48)
+                            .padding(.horizontal)
+                    }
+                    
+                    // Статичний список з перевіркою на пустоту
+                    VStack(spacing: 0) {
+                        if filteredTransactions().isEmpty {
+                            Color.white
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        } else {
                             ForEach(filteredTransactions()) { transaction in
                                 TransactionRow(transaction: transaction)
                                     .padding(.horizontal)
                                     .padding(.vertical, 4)
                             }
                         }
-                        .background(Color.clear)
                     }
-                    .padding(.top, 24)
+                    .background(Color.white)
+                    .cornerRadius(20, corners: [.topLeft, .topRight])
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
+                .padding(.top, 24)
+                .edgesIgnoringSafeArea(.bottom)
                 .sheet(isPresented: $showSettings) {
                     SettingsView()
                 }
                 .sheet(isPresented: $showingAddTransaction) {
                     AddTransactionView(transactionManager: transactionManager)
                 }
-                .overlay(
-                    VStack {
-                        Spacer()
-                        HStack {
-                            Spacer()
-                            Button(action: { showingAddTransaction = true }) {
-                                Image(systemName: "plus")
-                                    .font(.title)
-                                    .foregroundColor(.white)
-                                    .padding()
-                                    .background(Color.purple)
-                                    .clipShape(Circle())
-                                    .shadow(radius: 4)
-                            }
-                            .padding(.trailing, 24)
-                            .padding(.bottom, 32)
-                        }
-                    }
-                )
             }
         }
     }
@@ -125,6 +113,23 @@ struct TransactionListView: View {
         formatter.minimumFractionDigits = 2
         formatter.decimalSeparator = ","
         return formatter.string(from: NSNumber(value: balance)) ?? "$ 0,00"
+    }
+}
+
+// Додаємо розширення для заокруглення тільки верхніх кутів
+extension View {
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape( RoundedCorner(radius: radius, corners: corners) )
+    }
+}
+
+struct RoundedCorner: Shape {
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+    
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
     }
 }
 
@@ -234,14 +239,14 @@ struct CategoriesWrapView: View {
                                     .foregroundColor(.gray)
                                     .lineLimit(1)
                                     .truncationMode(.tail)
-                                    .minimumScaleFactor(0.7)
+                                   // .minimumScaleFactor(0.7)
                                 Text("$\(String(format: "%.2f", sums[item] ?? 0))")
                                     .font(.footnote)
                                     .fontWeight(.bold)
                                     .foregroundColor(.black)
                                     .lineLimit(1)
                                     .truncationMode(.tail)
-                                    .minimumScaleFactor(0.7)
+                                    //.minimumScaleFactor(0.7)
                             }
                             .padding(.horizontal, 16)
                             .frame(height: 48)
