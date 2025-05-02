@@ -8,7 +8,7 @@ struct TransactionListView: View {
     @State private var showSettings = false
     
     let types: [TransactionType] = [.costs, .income]
-    let costsCategories = ["Food", "Home", "Heah", "Enr", "Other", "and", "2lth", "2Enter", "Other Other Other Other"]
+    let costsCategories = ["Food", "Homeву", "Heahвуцв", "Enr", "Otherвуцвуц", "andвуву", "2lth", "2Enter", "Other Other Other Other"]
     
     var categorySums: [String: Double] {
         var dict: [String: Double] = [:]
@@ -207,7 +207,7 @@ struct CategoriesWrapView: View {
         let countInRow = max(1, Int((screenWidth + spacing) / (minItemWidth + spacing)))
         let allItems = ["+"] + categories
         let rows = chunked(allItems, size: countInRow)
-        VStack(spacing: spacing) {
+        VStack(alignment: .leading, spacing: spacing) {
             ForEach(rows, id: \.self) { row in
                 HStack(spacing: spacing) {
                     ForEach(row, id: \.self) { item in
@@ -219,7 +219,6 @@ struct CategoriesWrapView: View {
                                     .padding(.horizontal, 6)
                                     .frame(height: 48)
                             }
-                            .frame(maxWidth: .infinity)
                         } else {
                             HStack(spacing: 4) {
                                 Text("\(item):")
@@ -239,8 +238,7 @@ struct CategoriesWrapView: View {
                             .padding(.horizontal, 16)
                             .frame(height: 48)
                             .background(Color.white.opacity(0.4))
-                            .clipShape(RoundedRectangle(cornerRadius: 16))
-                            .frame(maxWidth: .infinity)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
                     }
                 }
