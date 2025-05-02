@@ -63,6 +63,14 @@ struct TransactionListView: View {
                         CategoriesWrapView(categories: costsCategories, sums: categorySums, addCategory: { /* поки без логіки */ })
                             .padding(.top, 8)
                         
+                        Button(action: { /* логіка для show all */ }) {
+                            Image("showalllllll")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(maxWidth: .infinity, minHeight: 48, maxHeight: 48)
+                                .padding(.horizontal)
+                        }
+                        
                         // Список транзакцій
                         VStack(spacing: 0) {
                             ForEach(filteredTransactions()) { transaction in
