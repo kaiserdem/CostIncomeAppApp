@@ -213,13 +213,11 @@ struct CategoriesWrapView: View {
                     ForEach(row, id: \.self) { item in
                         if item == "+" {
                             Button(action: addCategory) {
-                                Image("settttttting")
+                                Image("addCategory Name")
                                     .resizable()
-                                    .frame(width: 28, height: 28)
+                                    .frame(width: 44, height: 44)
                                     .padding(.horizontal, 6)
                                     .frame(height: 48)
-                                    .background(Color.white.opacity(0.4))
-                                    .clipShape(RoundedRectangle(cornerRadius: 16))
                             }
                             .frame(maxWidth: .infinity)
                         } else {
