@@ -7,6 +7,9 @@ struct SettingsView: View {
     @State private var isToggled = true
     @State private var selectedCurrency: TransactionCurrency = .usd
     @State private var showCurrencyPicker = false
+    @State private var showCurrencySheet = false
+    @State private var showManageCategoriesView = false
+    @State private var privacyPolicyView = false
 
     init() {
            if let savedValue = UserDefaults.standard.string(forKey: "SelectedCurrency"),
@@ -24,6 +27,7 @@ struct SettingsView: View {
     }
     
     var body: some View {
+        
         ZStack {
             Image("bfwefewwg")
                 .resizable()
@@ -118,47 +122,78 @@ struct SettingsView: View {
                                 .background(Color.white)
                                 .cornerRadius(10)
                             }
+                           
                     
                     
-                    
-                    
-                    
-                            // Третя кнопка
-                            Button(action: {}) {
-                                HStack {
-                                    Text("Manage categories")
-                                        .foregroundColor(.black)
-                                        .padding(.leading, 20)
-                                    Spacer()
-                                    Image("23432CaretLeft")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 20, height: 20)
-                                        .foregroundColor(.black)
-                                        .padding(.trailing, 20)
-                                }
-                                .frame(height: 50)
-                                .background(Color.white)
-                                .cornerRadius(10)
+                    // Третя кнопка
+                    NavigationLink(destination: ManageCategoriesView(), isActive: $showManageCategoriesView) {
+                        Button(action: {
+                            showManageCategoriesView = true
+                        }) {
+                            HStack {
+                                Text("Manage categories")
+                                    .foregroundColor(.black)
+                                    .padding(.leading, 20)
+                                Spacer()
+                                Image("23432CaretLeft")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 20, height: 20)
+                                    .foregroundColor(.black)
+                                    .padding(.trailing, 20)
                             }
+                            .frame(height: 50)
+                            .background(Color.white)
+                            .cornerRadius(10)
+                        }
+                        .padding(.top, 12)
+                        .padding(.trailing, 0)
+                        
+                    }
+                       
+                           
                             // Четверта кнопка
-                            Button(action: {}) {
-                                HStack {
-                                    Text("Privacy Policy")
-                                        .foregroundColor(.black)
-                                        .padding(.leading, 20)
-                                    Spacer()
-                                    Image("23432CaretLeft")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 20, height: 20)
-                                        .foregroundColor(.black)
-                                        .padding(.trailing, 20)
-                                }
-                                .frame(height: 50)
-                                .background(Color.white)
-                                .cornerRadius(10)
+                    NavigationLink(destination: PrivacyPolicyView(), isActive: $privacyPolicyView) {
+                        Button(action: {
+                            privacyPolicyView = true
+                        }) {
+                            HStack {
+                                Text("Privacy Policy")
+                                    .foregroundColor(.black)
+                                    .padding(.leading, 20)
+                                Spacer()
+                                Image("23432CaretLeft")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 20, height: 20)
+                                    .foregroundColor(.black)
+                                    .padding(.trailing, 20)
                             }
+                            .frame(height: 50)
+                            .background(Color.white)
+                            .cornerRadius(10)
+                        }
+                        .padding(.top, 12)
+                        .padding(.trailing, 0)
+                        
+                    }
+//                            Button(action: {}) {
+//                                HStack {
+//                                    Text("Privacy Policy")
+//                                        .foregroundColor(.black)
+//                                        .padding(.leading, 20)
+//                                    Spacer()
+//                                    Image("23432CaretLeft")
+//                                        .resizable()
+//                                        .aspectRatio(contentMode: .fit)
+//                                        .frame(width: 20, height: 20)
+//                                        .foregroundColor(.black)
+//                                        .padding(.trailing, 20)
+//                                }
+//                                .frame(height: 50)
+//                                .background(Color.white)
+//                                .cornerRadius(10)
+//                            }
                         }
                         .padding()
                 
@@ -168,5 +203,45 @@ struct SettingsView: View {
         }
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)
+        .sheet(isPresented: $showCurrencySheet) {
+            VStack(spacing: 0) {
+                // Вибір валюти
+                ForEach(TransactionCurrency.allCases, id: \.self) { currency in
+                    Button(action: {
+                        selectedCurrency = currency
+                        showCurrencySheet = false
+                    }) {
+                        HStack {
+                            Text(currency.symbol)
+                                .frame(width: 30)
+                            
+                            Spacer()
+                            
+                            Text(currency.rawValue)
+                            
+                            Spacer()
+                            
+                            Image(systemName: currency == selectedCurrency ? "checkmark.circle.fill" : "circle")
+                                .foregroundColor(.blue)
+                                .frame(width: 24, height: 24)
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 16)
+                    }
+                    .foregroundColor(.black)
+                    
+                    // Для розділення між пунктами
+                    if currency != TransactionCurrency.allCases.last {
+                        Divider().padding(.horizontal, 20)
+                    }
+                }
+            }
+            .padding(.top, 10)
+            // Використовуємо detents для висоти
+            .presentationDetents([.height(250)])
+            .presentationDragIndicator(.hidden)
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+        }
+
     }
 }
