@@ -37,9 +37,7 @@ struct AddCategoryPopup: View {
 
                 Button(action: {
                     if !newCategoryName.isEmpty {
-                        var savedCategories = UserDefaults.standard.stringArray(forKey: "categories") ?? []
-                        savedCategories.append(newCategoryName)
-                        UserDefaults.standard.set(savedCategories, forKey: "categories")
+                        // Додайте логіку для збереження категорії
                         newCategoryName = ""
                         isPresented = false
                     }

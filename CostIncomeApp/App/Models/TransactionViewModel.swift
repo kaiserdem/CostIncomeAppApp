@@ -29,6 +29,7 @@ class TransactionViewModel: ObservableObject {
     func addCategory(_ name: String) {
         categories.append(name)
         UserDefaults.standard.set(categories, forKey: "categories")
+        updateCategories()
     }
     
     func filteredTransactions() -> [Transaction] {
