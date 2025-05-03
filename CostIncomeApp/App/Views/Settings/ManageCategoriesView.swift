@@ -1,13 +1,14 @@
-
 import SwiftUI
 
 struct ManageCategoriesView: View {
     @Environment(\.dismiss) private var dismiss
+    @State private var categories: [String] = []
+    @State private var editingCategory: String?
+    @State private var showingEditAlert = false
+    @State private var newCategoryName = ""
     
-   
-
     init() {
-        
+        _categories = State(initialValue: UserDefaults.standard.stringArray(forKey: "categories") ?? [])
     }
     
     var body: some View {
@@ -43,17 +44,71 @@ struct ManageCategoriesView: View {
                 
                 Rectangle()
                     .fill(Color.gray)
-                    .frame(height: 1) // тонка лінія
+                    .frame(height: 1)
                     .edgesIgnoringSafeArea(.horizontal)
                 
-                Spacer()
-                Spacer()
-                Spacer()
+                ScrollView {
+                    VStack(spacing: 12) {
+                        ForEach(categories, id: \.self) { category in
+                            ZStack {
+                                
+                                
+                                HStack {
+                                    Text(category)
+                                        .font(.custom("CabinetGrotesk-Variable", size: 16))
+                                        .foregroundColor(.black)
+                                        .frame(width:  UIScreen.main.bounds.width - 90, height: 20)
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 12)
+                                        .background(Color.white)
+                                        .cornerRadius(8)
+                                    
+                                    Button(action: {
+                                        editingCategory = category
+                                        newCategoryName = category
+                                        showingEditAlert = true
+                                    }) {
+                                        Image("Frame 553")
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 45, height: 45)
+                                    }
+                                    
+                                    Button(action: {
+                                        if let index = categories.firstIndex(of: category) {
+                                            categories.remove(at: index)
+                                            UserDefaults.standard.set(categories, forKey: "categories")
+                                        }
+                                    }) {
+                                        Image("Frame 554")
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 45, height: 45)
+                                    }
+                                }
+                                .padding(.trailing, 8)
+                            }
+                            .padding(.horizontal)
+                        }
+                    }
+                    .padding(.top, 20)
+                }
                 
+              //  Spacer()
             }
-                    .navigationBarHidden(true)
-                    .navigationBarBackButtonHidden(true)
-                
+            .navigationBarHidden(true)
+            .navigationBarBackButtonHidden(true)
+        }
+        .alert("Edit Category", isPresented: $showingEditAlert) {
+            TextField("Category name", text: $newCategoryName)
+            Button("Cancel", role: .cancel) { }
+            Button("Save") {
+                if let oldCategory = editingCategory,
+                   let index = categories.firstIndex(of: oldCategory) {
+                    categories[index] = newCategoryName
+                    UserDefaults.standard.set(categories, forKey: "categories")
+                }
             }
+        }
     }
 }
