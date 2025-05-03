@@ -6,10 +6,10 @@ struct TransactionListView: View {
     @State private var showingAddTransaction = false
     @State private var selectedTypeIndex: Int = 0 // 0 - costs, 1 - income
     @State private var showSettings = false
+    @State private var showAddCategoryPopup = false
     
     let types: [TransactionType] = [.costs, .income]
     let costsCategories = ["Food", "Home and Life", "Health", "Entertainment", "Other"]
-    //["Food", "Homeву", "Heahвуцв", "Enr", "Otherвуцвуц", "andвуву", "2lth", "2Enter", "Other Other Other Other"]
     
     var categorySums: [String: Double] {
         var dict: [String: Double] = [:]
@@ -60,7 +60,7 @@ struct TransactionListView: View {
                         .padding(.bottom, 8)
                     
                     // Блок категорій
-                    CategoriesWrapView(categories: costsCategories, sums: categorySums, addCategory: { /* поки без логіки */ })
+                    CategoriesWrapView(categories: costsCategories, sums: categorySums, showAddCategoryPopup: $showAddCategoryPopup, addCategory: { /* поки без логіки */ })
                         .padding(.top, 8)
                     
                     Button(action: { /* логіка для show all */ }) {
@@ -94,7 +94,11 @@ struct TransactionListView: View {
                     SettingsView()
                 }
                 .sheet(isPresented: $showingAddTransaction) {
-                    AddTransactionView(transactionManager: transactionManager)
+                    AddCategoruPopup(isPresented: $showAddCategoryPopup)
+                }
+
+                if showAddCategoryPopup {
+                    AddCategoruPopup(isPresented: $showAddCategoryPopup)
                 }
             }
         }
@@ -149,17 +153,6 @@ struct CustomIndicator: View {
     }
 }
 
-struct SettingsView: View {
-    var body: some View {
-        VStack {
-            Text("Налаштування")
-                .font(.largeTitle)
-                .padding()
-            Spacer()
-        }
-    }
-}
-
 struct TransactionRow: View {
     let transaction: Transaction
     
@@ -207,10 +200,47 @@ struct TransactionRow: View {
     }
 }
 
-// Кастомний wrap layout для категорій
+struct FocusableTextField: UIViewRepresentable {
+    @Binding var text: String
+    var placeholder: String
+
+    func makeUIView(context: Context) -> UITextField {
+        let textField = UITextField()
+        textField.placeholder = placeholder
+        textField.borderStyle = .roundedRect
+        textField.delegate = context.coordinator
+        return textField
+    }
+
+    func updateUIView(_ uiView: UITextField, context: Context) {
+        uiView.text = text
+        if !uiView.isFirstResponder {
+            uiView.becomeFirstResponder()
+        }
+    }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    class Coordinator: NSObject, UITextFieldDelegate {
+        var parent: FocusableTextField
+
+        init(_ parent: FocusableTextField) {
+            self.parent = parent
+        }
+
+        func textFieldDidChangeSelection(_ textField: UITextField) {
+            parent.text = textField.text ?? ""
+        }
+    }
+}
+
+
 struct CategoriesWrapView: View {
     let categories: [String]
     let sums: [String: Double]
+    @Binding var showAddCategoryPopup: Bool
     var addCategory: () -> Void
 
     var body: some View {
@@ -220,12 +250,15 @@ struct CategoriesWrapView: View {
         let countInRow = max(1, Int((screenWidth + spacing) / (minItemWidth + spacing)))
         let allItems = ["+"] + categories
         let rows = chunked(allItems, size: countInRow)
+
         VStack(alignment: .leading, spacing: spacing) {
-            ForEach(rows, id: \.self) { row in
+            ForEach(rows, id: \ .self) { row in
                 HStack(spacing: spacing) {
-                    ForEach(row, id: \.self) { item in
+                    ForEach(row, id: \ .self) { item in
                         if item == "+" {
-                            Button(action: addCategory) {
+                            Button(action: {
+                                showAddCategoryPopup = true
+                            }) {
                                 Image("addCategory Name")
                                     .resizable()
                                     .frame(width: 44, height: 44)
@@ -239,14 +272,12 @@ struct CategoriesWrapView: View {
                                     .foregroundColor(.gray)
                                     .lineLimit(1)
                                     .truncationMode(.tail)
-                                   // .minimumScaleFactor(0.7)
                                 Text("$\(String(format: "%.2f", sums[item] ?? 0))")
                                     .font(.footnote)
                                     .fontWeight(.bold)
                                     .foregroundColor(.black)
                                     .lineLimit(1)
                                     .truncationMode(.tail)
-                                    //.minimumScaleFactor(0.7)
                             }
                             .padding(.horizontal, 16)
                             .frame(height: 48)
@@ -256,8 +287,8 @@ struct CategoriesWrapView: View {
                     }
                 }
             }
+            .padding(.horizontal)
         }
-        .padding(.horizontal)
     }
 
     // Динамічний chunked
@@ -268,74 +299,3 @@ struct CategoriesWrapView: View {
     }
 }
 
-// Гнучкий wrap layout для SwiftUI
-struct FlexibleView<Data: Collection, Content: View>: View where Data.Element: Hashable {
-    let data: Data
-    let spacing: CGFloat
-    let alignment: HorizontalAlignment
-    let content: (Data.Element) -> Content
-
-    init(data: Data, spacing: CGFloat = 8, alignment: HorizontalAlignment = .leading, @ViewBuilder content: @escaping (Data.Element) -> Content) {
-        self.data = data
-        self.spacing = spacing
-        self.alignment = alignment
-        self.content = content
-    }
-
-    var body: some View {
-        FlowLayout(alignment: alignment, spacing: spacing, data: data, content: content)
-    }
-}
-
-// FlowLayout — простий layout для wrap
-struct FlowLayout<Data: Collection, Content: View>: View where Data.Element: Hashable {
-    let alignment: HorizontalAlignment
-    let spacing: CGFloat
-    let data: Data
-    let content: (Data.Element) -> Content
-
-    @State private var totalHeight: CGFloat = .zero
-
-    var body: some View {
-        GeometryReader { geometry in
-            self.generateContent(in: geometry)
-        }
-        .frame(height: totalHeight)
-    }
-
-    private func generateContent(in geometry: GeometryProxy) -> some View {
-        var width = CGFloat.zero
-        var rows: [[Data.Element]] = [[]]
-
-        for item in data {
-            let itemSize = CGSize(width: 120, height: 48) // приблизна ширина, можна підлаштувати
-            if width + itemSize.width > geometry.size.width {
-                width = 0
-                rows.append([item])
-            } else {
-                rows[rows.count - 1].append(item)
-            }
-            width += itemSize.width + spacing
-        }
-
-        return VStack(alignment: alignment, spacing: spacing) {
-            ForEach(rows, id: \.self) { row in
-                HStack(spacing: spacing) {
-                    ForEach(row, id: \.self) { item in
-                        content(item)
-                            .frame(width: (geometry.size.width - CGFloat(row.count - 1) * spacing) / CGFloat(row.count))
-                    }
-                }
-                .frame(maxWidth: .infinity)
-            }
-        }
-        .background(
-            GeometryReader { proxy in
-                Color.clear
-                    .onAppear {
-                        totalHeight = proxy.size.height
-                    }
-            }
-        )
-    }
-} 
