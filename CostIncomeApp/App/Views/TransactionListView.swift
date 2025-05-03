@@ -1,8 +1,8 @@
 import SwiftUI
-// import UIKit
+import Combine
 
 struct TransactionListView: View {
-    @StateObject private var transactionManager = TransactionManager()
+    @StateObject private var viewModel = TransactionViewModel()
     @State private var showingAddTransaction = false
     @State private var selectedTypeIndex: Int = 0 // 0 - costs, 1 - income
     @State private var showSettings = false
@@ -10,12 +10,11 @@ struct TransactionListView: View {
     @State private var newCategoryName: String = ""
     
     let types: [TransactionType] = [.costs, .income]
-    let costsCategories = ["Food", "Home and Life", "Health", "Entertainment", "Other"]
-    
+        
     var categorySums: [String: Double] {
         var dict: [String: Double] = [:]
-        for cat in costsCategories {
-            dict[cat] = transactionManager.transactions.filter { $0.type == .costs && $0.category == cat }.reduce(0) { $0 + $1.amount }
+        for cat in viewModel.categories {
+            dict[cat] = viewModel.transactionManager.transactions.filter { $0.type == .costs && $0.category == cat }.reduce(0) { $0 + $1.amount }
         }
         return dict
     }
@@ -28,89 +27,108 @@ struct TransactionListView: View {
                     .aspectRatio(contentMode: .fill)
                     .edgesIgnoringSafeArea(.all)
                 
-                VStack(spacing: 24) {
-                    // Кнопка завжди зверху
-                    HStack {
-                        Spacer()
-                        Button(action: { showSettings = true }) {
-                            Image("settttttting")
+                ScrollView {
+                    VStack(spacing: 24) {
+                        // Кнопка завжди зверху
+                        HStack {
+                            Spacer()
+                            Button(action: { viewModel.showSettings = true }) {
+                                Image("settttttting")
+                                    .resizable()
+                                    .frame(width: 42, height: 42)
+                            }
+                            .padding(.top, 12)
+                            .padding(.trailing, 16)
+                        }
+                        // Свайп тільки для назви і суми
+                        TabView(selection: $viewModel.selectedTypeIndex) {
+                            ForEach(0..<viewModel.types.count, id: \ .self) { idx in
+                                VStack(spacing: 12) {
+                                    Text(viewModel.types[idx] == .costs ? "Costs" : "Income")
+                                        .font(.title2)
+                                        .foregroundColor(.white)
+                                    Text(viewModel.balanceString(for: viewModel.types[idx]))
+                                        .font(.system(size: 48, weight: .bold, design: .rounded))
+                                        .foregroundColor(.white)
+                                }
+                                .tag(idx)
+                            }
+                        }
+                        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                        .frame(height: 120)
+                        
+                        CustomIndicator(selectedIndex: $viewModel.selectedTypeIndex)
+                            .padding(.bottom, 8)
+                        
+                        // Блок категорій
+                        CategoriesWrapView(categories: viewModel.categories, sums: categorySums, showAddCategoryPopup: $viewModel.showAddCategoryPopup, addCategory: {
+                            viewModel.showAddCategoryPopup = true
+                        })
+                            .padding(.top, 8)
+                        
+                        Button(action: { /* логіка для show all */ }) {
+                            Image("showalllllll")
                                 .resizable()
-                                .frame(width: 42, height: 42)
+                                .aspectRatio(contentMode: .fit)
+                                .frame(maxWidth: .infinity, minHeight: 48, maxHeight: 48)
+                                .padding(.horizontal)
                         }
-                        .padding(.top, 12)
-                        .padding(.trailing, 16)
-                    }
-                    // Свайп тільки для назви і суми
-                    TabView(selection: $selectedTypeIndex) {
-                        ForEach(0..<types.count, id: \ .self) { idx in
-                            VStack(spacing: 12) {
-                                Text(types[idx] == .costs ? "Costs" : "Income")
-                                    .font(.title2)
-                                    .foregroundColor(.white)
-                                Text(balanceString(for: types[idx]))
-                                    .font(.system(size: 48, weight: .bold, design: .rounded))
-                                    .foregroundColor(.white)
-                            }
-                            .tag(idx)
-                        }
-                    }
-                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                    .frame(height: 120)
-                    
-                    CustomIndicator(selectedIndex: $selectedTypeIndex)
-                        .padding(.bottom, 8)
-                    
-                    // Блок категорій
-                    CategoriesWrapView(categories: costsCategories, sums: categorySums, showAddCategoryPopup: $showAddCategoryPopup, addCategory: { /* поки без логіки */ })
-                        .padding(.top, 8)
-                    
-                    Button(action: { /* логіка для show all */ }) {
-                        Image("showalllllll")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(maxWidth: .infinity, minHeight: 48, maxHeight: 48)
-                            .padding(.horizontal)
-                    }
-                    
-                    // Статичний список з перевіркою на пустоту
-                    VStack(spacing: 0) {
-                        if filteredTransactions().isEmpty {
-                            Color.white
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        } else {
-                            ForEach(filteredTransactions()) { transaction in
-                                TransactionRow(transaction: transaction)
-                                    .padding(.horizontal)
-                                    .padding(.vertical, 4)
+                        
+                        // Статичний список з перевіркою на пустоту
+                        VStack(spacing: 0) {
+                            if viewModel.filteredTransactions().isEmpty {
+                                Color.white
+                                    .frame(maxWidth: .infinity, minHeight: 200, maxHeight: .infinity)
+                                    .background(Color.white.opacity(0.8))
+                                    .background(Color.white.opacity(0.7))
+
+                            } else {
+                                ForEach(viewModel.filteredTransactions()) { transaction in
+                                    TransactionRow(transaction: transaction)
+                                        .padding(.horizontal)
+                                        .padding(.vertical, 4)
+                                }
                             }
                         }
+                        .background(Color.white)
+                        .cornerRadius(20, corners: [.topLeft, .topRight])
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .edgesIgnoringSafeArea(.all)
+                        .padding(.bottom, -46)
+
+                        Spacer()
                     }
-                    .background(Color.white)
-                    .cornerRadius(20, corners: [.topLeft, .topRight])
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(.top, 24)
+                    .edgesIgnoringSafeArea(.bottom)
                 }
-                .padding(.top, 24)
-                .edgesIgnoringSafeArea(.bottom)
-                .sheet(isPresented: $showSettings) {
+                .sheet(isPresented: $viewModel.showSettings) {
                     SettingsView()
                 }
-                .sheet(isPresented: $showingAddTransaction) {
-                    AddCategoryPopup(isPresented: $showAddCategoryPopup)
+                .sheet(isPresented: $viewModel.showingAddTransaction) {
+                    AddCategoryPopup(isPresented: $viewModel.showAddCategoryPopup)
                 }
 
-                if showAddCategoryPopup {
-                    AddCategoryPopup(isPresented: $showAddCategoryPopup)
+                if viewModel.showAddCategoryPopup {
+                    AddCategoryPopup(isPresented: $viewModel.showAddCategoryPopup)
                 }
             }
         }
+        .onAppear {
+            viewModel.updateCategories()
+        }
+    }
+    
+    func updateCategories() {
+        let savedCategories = UserDefaults.standard.stringArray(forKey: "categories") ?? []
+        viewModel.categories = viewModel.defaultCategories + savedCategories.filter { !viewModel.defaultCategories.contains($0) }
     }
     
     func filteredTransactions() -> [Transaction] {
-        transactionManager.transactions.filter { $0.type == types[selectedTypeIndex] }
+        viewModel.transactionManager.transactions.filter { $0.type == types[selectedTypeIndex] }
     }
     
     func balanceString(for type: TransactionType) -> String {
-        let balance = transactionManager.transactions.filter { $0.type == type }.reduce(0) { $0 + $1.amount }
+        let balance = viewModel.transactionManager.transactions.filter { $0.type == type }.reduce(0) { $0 + $1.amount }
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.currencySymbol = "$ "
@@ -237,7 +255,6 @@ struct FocusableTextField: UIViewRepresentable {
     }
 }
 
-
 struct CategoriesWrapView: View {
     let categories: [String]
     let sums: [String: Double]
@@ -282,7 +299,7 @@ struct CategoriesWrapView: View {
                             }
                             .padding(.horizontal, 16)
                             .frame(height: 48)
-                            .background(Color.white.opacity(0.4))
+                            .background(Color.white.opacity(0.7))
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
                     }
