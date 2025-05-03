@@ -10,7 +10,7 @@ struct TransactionListView: View {
     @State private var newCategoryName: String = ""
     
     let types: [TransactionType] = [.costs, .income]
-        
+    
     var categorySums: [String: Double] {
         var dict: [String: Double] = [:]
         for cat in viewModel.categories {
@@ -20,7 +20,7 @@ struct TransactionListView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ZStack {
                 Image("bfwefewwg")
                     .resizable()
@@ -32,13 +32,18 @@ struct TransactionListView: View {
                         // Кнопка завжди зверху
                         HStack {
                             Spacer()
-                            Button(action: { viewModel.showSettings = true }) {
-                                Image("settttttting")
-                                    .resizable()
-                                    .frame(width: 42, height: 42)
+
+                            NavigationLink(destination: SettingsView(), isActive: $showSettings) {
+                                Button(action: {
+                                    showSettings = true
+                                }) {
+                                    Image("settttttting")
+                                        .resizable()
+                                        .frame(width: 42, height: 42)
+                                }
+                                .padding(.top, 12)
+                                .padding(.trailing, 16)
                             }
-                            .padding(.top, 12)
-                            .padding(.trailing, 16)
                         }
                         // Свайп тільки для назви і суми
                         TabView(selection: $viewModel.selectedTypeIndex) {
@@ -64,7 +69,7 @@ struct TransactionListView: View {
                         CategoriesWrapView(viewModel: _viewModel, sums: categorySums, showAddCategoryPopup: $viewModel.showAddCategoryPopup, addCategory: {
                             viewModel.showAddCategoryPopup = true
                         })
-                            .padding(.top, 8)
+                        .padding(.top, 8)
                         
                         Button(action: { /* логіка для show all */ }) {
                             Image("showalllllll")
@@ -81,7 +86,7 @@ struct TransactionListView: View {
                                     .frame(maxWidth: .infinity, minHeight: 400, maxHeight: .infinity)
                                     .background(Color.white.opacity(0.8))
                                     .background(Color.white.opacity(0.7))
-
+                                
                             } else {
                                 ForEach(viewModel.filteredTransactions()) { transaction in
                                     TransactionRow(transaction: transaction)
@@ -95,26 +100,47 @@ struct TransactionListView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .edgesIgnoringSafeArea(.all)
                         .padding(.bottom, -46)
-
+                        
                         Spacer()
                     }
                     .padding(.top, 24)
                     .edgesIgnoringSafeArea(.bottom)
                 }
-                .sheet(isPresented: $viewModel.showSettings) {
-                    SettingsView()
+                VStack {
+                    
+                    Spacer()
+                    Spacer()
+                    HStack(spacing: 8) {
+                        Button(action: {
+                            
+                        }) {
+                            Image("Buuton")
+                                .resizable()
+                                .frame(width: 75, height: 75)
+                            
+                        }
+                        
+                        Button(action: {
+                            
+                        }) {
+                            Image("Buuton-2")
+                                .resizable()
+                                .frame(width: UIScreen.main.bounds.width - 100, height: 75)
+                            
+                        }
+                        
+                    }
+                    .padding(.bottom, 30)
+                    .padding(.horizontal, 0)
                 }
-                .sheet(isPresented: $viewModel.showingAddTransaction) {
-                    AddCategoryPopup(isPresented: $viewModel.showAddCategoryPopup)
-                }
-
+              
                 if viewModel.showAddCategoryPopup {
                     AddCategoryPopup(isPresented: $viewModel.showAddCategoryPopup)
                 }
             }
-        }
-        .onAppear {
-            viewModel.updateCategories()
+            .onAppear {
+                viewModel.updateCategories()
+            }
         }
     }
     
@@ -222,7 +248,7 @@ struct TransactionRow: View {
 struct FocusableTextField: UIViewRepresentable {
     @Binding var text: String
     var placeholder: String
-
+    
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
         textField.placeholder = placeholder
@@ -230,25 +256,25 @@ struct FocusableTextField: UIViewRepresentable {
         textField.delegate = context.coordinator
         return textField
     }
-
+    
     func updateUIView(_ uiView: UITextField, context: Context) {
         uiView.text = text
         if !uiView.isFirstResponder {
             uiView.becomeFirstResponder()
         }
     }
-
+    
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-
+    
     class Coordinator: NSObject, UITextFieldDelegate {
         var parent: FocusableTextField
-
+        
         init(_ parent: FocusableTextField) {
             self.parent = parent
         }
-
+        
         func textFieldDidChangeSelection(_ textField: UITextField) {
             parent.text = textField.text ?? ""
         }
@@ -260,7 +286,7 @@ struct CategoriesWrapView: View {
     let sums: [String: Double]
     @Binding var showAddCategoryPopup: Bool
     var addCategory: () -> Void
-
+    
     var body: some View {
         let screenWidth = UIScreen.main.bounds.width
         let minItemWidth: CGFloat = 120
@@ -268,7 +294,7 @@ struct CategoriesWrapView: View {
         let countInRow = max(1, Int((screenWidth + spacing) / (minItemWidth + spacing)))
         let allItems = ["+"] + viewModel.categories
         let rows = chunked(allItems, size: countInRow)
-
+        
         VStack(alignment: .leading, spacing: spacing) {
             ForEach(rows, id: \ .self) { row in
                 HStack(spacing: spacing) {
@@ -308,7 +334,7 @@ struct CategoriesWrapView: View {
             .padding(.horizontal)
         }
     }
-
+    
     // Динамічний chunked
     func chunked<T>(_ array: [T], size: Int) -> [[T]] {
         stride(from: 0, to: array.count, by: size).map {
