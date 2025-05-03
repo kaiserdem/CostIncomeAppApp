@@ -1,8 +1,10 @@
 import SwiftUI
+import UIKit
 
 struct AddCategoryPopup: View {
     @Binding var isPresented: Bool
     @State private var newCategoryName = ""
+    @StateObject private var viewModel = TransactionViewModel()
 
     var body: some View {
         ZStack {
@@ -37,7 +39,7 @@ struct AddCategoryPopup: View {
 
                 Button(action: {
                     if !newCategoryName.isEmpty {
-                        // Додайте логіку для збереження категорії
+                        viewModel.addCategory(newCategoryName)
                         newCategoryName = ""
                         isPresented = false
                     }

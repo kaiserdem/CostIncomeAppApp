@@ -2,7 +2,7 @@ import SwiftUI
 import Combine
 
 struct TransactionListView: View {
-    @StateObject private var viewModel = TransactionViewModel()
+    @EnvironmentObject var viewModel: TransactionViewModel
     @State private var showingAddTransaction = false
     @State private var selectedTypeIndex: Int = 0 // 0 - costs, 1 - income
     @State private var showSettings = false
@@ -61,7 +61,7 @@ struct TransactionListView: View {
                             .padding(.bottom, 8)
                         
                         // Блок категорій
-                        CategoriesWrapView(categories: viewModel.categories, sums: categorySums, showAddCategoryPopup: $viewModel.showAddCategoryPopup, addCategory: {
+                        CategoriesWrapView(viewModel: _viewModel, sums: categorySums, showAddCategoryPopup: $viewModel.showAddCategoryPopup, addCategory: {
                             viewModel.showAddCategoryPopup = true
                         })
                             .padding(.top, 8)
@@ -78,7 +78,7 @@ struct TransactionListView: View {
                         VStack(spacing: 0) {
                             if viewModel.filteredTransactions().isEmpty {
                                 Color.white
-                                    .frame(maxWidth: .infinity, minHeight: 200, maxHeight: .infinity)
+                                    .frame(maxWidth: .infinity, minHeight: 400, maxHeight: .infinity)
                                     .background(Color.white.opacity(0.8))
                                     .background(Color.white.opacity(0.7))
 
@@ -256,7 +256,7 @@ struct FocusableTextField: UIViewRepresentable {
 }
 
 struct CategoriesWrapView: View {
-    let categories: [String]
+    @EnvironmentObject var viewModel: TransactionViewModel
     let sums: [String: Double]
     @Binding var showAddCategoryPopup: Bool
     var addCategory: () -> Void
@@ -266,7 +266,7 @@ struct CategoriesWrapView: View {
         let minItemWidth: CGFloat = 120
         let spacing: CGFloat = 8
         let countInRow = max(1, Int((screenWidth + spacing) / (minItemWidth + spacing)))
-        let allItems = ["+"] + categories
+        let allItems = ["+"] + viewModel.categories
         let rows = chunked(allItems, size: countInRow)
 
         VStack(alignment: .leading, spacing: spacing) {

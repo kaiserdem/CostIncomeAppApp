@@ -8,7 +8,7 @@ class TransactionViewModel: ObservableObject {
     @Published var showSettings = false
     @Published var showAddCategoryPopup = false
     @Published var newCategoryName: String = ""
-    @Published var categories: [String] = UserDefaults.standard.stringArray(forKey: "categories") ?? []
+    @Published var categories: [String] = []
     
     let types: [TransactionType] = [.costs, .income]
     let defaultCategories = ["Food", "Home and Life", "Health", "Entertainment", "Other"]
@@ -23,13 +23,19 @@ class TransactionViewModel: ObservableObject {
     
     func updateCategories() {
         let savedCategories = UserDefaults.standard.stringArray(forKey: "categories") ?? []
+        print("savedCategories (перед оновленням): \(savedCategories.count)")
         categories = defaultCategories + savedCategories.filter { !defaultCategories.contains($0) }
+        print("allCategories (після оновлення): \(categories.count)")
     }
     
     func addCategory(_ name: String) {
-        categories.append(name)
-        UserDefaults.standard.set(categories, forKey: "categories")
+        print("Кількість категорій перед додаванням: \(categories.count)")
+        var cat = UserDefaults.standard.stringArray(forKey: "categories") ?? []
+        cat.append(name)
+        UserDefaults.standard.set(cat, forKey: "categories")
+        print("Збережені категорії в UserDefaults: \(UserDefaults.standard.stringArray(forKey: "categories")?.count ?? 0)")
         updateCategories()
+        print("Кількість категорій після додавання: \(categories.count)")
     }
     
     func filteredTransactions() -> [Transaction] {

@@ -5,8 +5,9 @@ struct CostIncomeAppApp: App {
     var body: some Scene {
         WindowGroup {
             TransactionListView()
+                .environmentObject(TransactionViewModel())
+
         }
     }
 }
-//    let costsCategories = ["Food", "Home and Life", "Health", "Entertainment", "Other"]
 
