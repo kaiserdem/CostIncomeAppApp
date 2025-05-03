@@ -1,5 +1,5 @@
-
 import SwiftUI
+import Foundation
 
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
@@ -98,8 +98,7 @@ struct SettingsView: View {
                     
                             // Друга кнопка
                             Button(action: {
-                                
-                                showCurrencyPicker = true
+                                showCurrencySheet = true
                             }) {
                                 HStack {
                                     Text("Currency")
@@ -177,23 +176,6 @@ struct SettingsView: View {
                         .padding(.trailing, 0)
                         
                     }
-//                            Button(action: {}) {
-//                                HStack {
-//                                    Text("Privacy Policy")
-//                                        .foregroundColor(.black)
-//                                        .padding(.leading, 20)
-//                                    Spacer()
-//                                    Image("23432CaretLeft")
-//                                        .resizable()
-//                                        .aspectRatio(contentMode: .fit)
-//                                        .frame(width: 20, height: 20)
-//                                        .foregroundColor(.black)
-//                                        .padding(.trailing, 20)
-//                                }
-//                                .frame(height: 50)
-//                                .background(Color.white)
-//                                .cornerRadius(10)
-//                            }
                         }
                         .padding()
                 
@@ -204,44 +186,61 @@ struct SettingsView: View {
         .navigationBarHidden(true)
         .navigationBarBackButtonHidden(true)
         .sheet(isPresented: $showCurrencySheet) {
-            VStack(spacing: 0) {
-                // Вибір валюти
-                ForEach(TransactionCurrency.allCases, id: \.self) { currency in
-                    Button(action: {
-                        selectedCurrency = currency
-                        showCurrencySheet = false
-                    }) {
-                        HStack {
-                            Text(currency.symbol)
-                                .frame(width: 30)
-                            
-                            Spacer()
-                            
-                            Text(currency.rawValue)
-                            
-                            Spacer()
-                            
-                            Image(systemName: currency == selectedCurrency ? "checkmark.circle.fill" : "circle")
-                                .foregroundColor(.blue)
-                                .frame(width: 24, height: 24)
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 16)
-                    }
-                    .foregroundColor(.black)
-                    
-                    // Для розділення між пунктами
-                    if currency != TransactionCurrency.allCases.last {
-                        Divider().padding(.horizontal, 20)
-                    }
+            CurrencyPickerSheet(selectedCurrency: $selectedCurrency, isPresented: $showCurrencySheet)
+        }
+    }
+}
+
+struct CurrencyPickerSheet: View {
+    @Binding var selectedCurrency: TransactionCurrency
+    @Binding var isPresented: Bool
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            // Заголовок
+                        
+            HStack {
+                Spacer()
+
+                
+                Text("Currency")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity)
+                    .offset(x: 25)
+                
+                Button(action: {
+                    isPresented = false
+                }) {
+                    Image(systemName: "xmark")
+                        .foregroundColor(.gray)
+                        .padding()
                 }
             }
-            .padding(.top, 10)
-            // Використовуємо detents для висоти
-            .presentationDetents([.height(250)])
-            .presentationDragIndicator(.hidden)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .padding(.horizontal)
+            .padding(.top)
+            
+            // Пікер валют
+            Picker("Currency", selection: $selectedCurrency) {
+                ForEach(TransactionCurrency.allCases, id: \.self) { currency in
+                    HStack {
+                        Text(currency.symbol)
+                            .frame(width: 30)
+                            .foregroundStyle(.purple)
+                        Text(currency.rawValue)
+                            .foregroundStyle(.purple)
+                    }
+                    .tag(currency)
+                }
+            }
+            .pickerStyle(.wheel)
+            .padding()
+            .onChange(of: selectedCurrency) { newValue in
+                UserDefaults.standard.set(newValue.rawValue, forKey: "SelectedCurrency")
+            }
+            .tint(.purple)
         }
-
+        .background(Color.red.opacity(0.05)) // Світло-сірий фон
+        .presentationDetents([.fraction(0.33)])
+        //.presentationDragIndicator(.visible)
     }
 }
