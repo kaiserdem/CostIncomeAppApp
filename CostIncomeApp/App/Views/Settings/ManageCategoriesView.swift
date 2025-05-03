@@ -1,10 +1,11 @@
 import SwiftUI
 
+
 struct ManageCategoriesView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var categories: [String] = []
     @State private var editingCategory: String?
-    @State private var showingEditAlert = false
+    @State private var showingEditPopup = false
     @State private var newCategoryName = ""
     
     init() {
@@ -56,7 +57,7 @@ struct ManageCategoriesView: View {
                                         Text(category)
                                             .font(.custom("CabinetGrotesk-Variable", size: 16))
                                             .foregroundColor(.black)
-                                            .frame(width: UIScreen.main.bounds.width - 170, height: 20)
+                                            .frame(width: geometry.size.width - 170, height: 20)
                                             .frame(maxWidth: .infinity, alignment: .leading)
                                             .padding(.horizontal, 16)
                                             .padding(.vertical, 12)
@@ -65,8 +66,7 @@ struct ManageCategoriesView: View {
                                         
                                         Button(action: {
                                             editingCategory = category
-                                            newCategoryName = category
-                                            showingEditAlert = true
+                                            showingEditPopup = true
                                         }) {
                                             Image("Frame 553")
                                                 .resizable()
@@ -101,16 +101,16 @@ struct ManageCategoriesView: View {
             .navigationBarHidden(true)
             .navigationBarBackButtonHidden(true)
         }
-        .alert("Edit Category", isPresented: $showingEditAlert) {
-            TextField("Category name", text: $newCategoryName)
-            Button("Cancel", role: .cancel) { }
-            Button("Save") {
-                if let oldCategory = editingCategory,
-                   let index = categories.firstIndex(of: oldCategory) {
-                    categories[index] = newCategoryName
-                    UserDefaults.standard.set(categories, forKey: "categories")
+        .overlay(
+            Group {
+                if showingEditPopup, let category = editingCategory {
+                    EditCategoryPopup(
+                        isPresented: $showingEditPopup,
+                        categories: $categories,
+                        oldCategory: category
+                    )
                 }
             }
-        }
+        )
     }
 }

@@ -1,5 +1,4 @@
 import SwiftUI
-import UIKit
 
 struct AddCategoryPopup: View {
     @Binding var isPresented: Bool

@@ -116,7 +116,7 @@ struct TransactionListView: View {
                         }) {
                             Image("Buuton")
                                 .resizable()
-                                .frame(width: 75, height: 75)
+                                .frame(width: 75, height: 78)
                             
                         }
                         
@@ -125,7 +125,7 @@ struct TransactionListView: View {
                         }) {
                             Image("Buuton-2")
                                 .resizable()
-                                .frame(width: UIScreen.main.bounds.width - 100, height: 75)
+                                .frame(width: UIScreen.main.bounds.width - 100, height: 78)
                             
                         }
                         
