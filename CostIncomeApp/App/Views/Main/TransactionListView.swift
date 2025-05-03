@@ -245,41 +245,6 @@ struct TransactionRow: View {
     }
 }
 
-struct FocusableTextField: UIViewRepresentable {
-    @Binding var text: String
-    var placeholder: String
-    
-    func makeUIView(context: Context) -> UITextField {
-        let textField = UITextField()
-        textField.placeholder = placeholder
-        textField.borderStyle = .roundedRect
-        textField.delegate = context.coordinator
-        return textField
-    }
-    
-    func updateUIView(_ uiView: UITextField, context: Context) {
-        uiView.text = text
-        if !uiView.isFirstResponder {
-            uiView.becomeFirstResponder()
-        }
-    }
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-    
-    class Coordinator: NSObject, UITextFieldDelegate {
-        var parent: FocusableTextField
-        
-        init(_ parent: FocusableTextField) {
-            self.parent = parent
-        }
-        
-        func textFieldDidChangeSelection(_ textField: UITextField) {
-            parent.text = textField.text ?? ""
-        }
-    }
-}
 
 struct CategoriesWrapView: View {
     @EnvironmentObject var viewModel: TransactionViewModel
