@@ -1,7 +1,7 @@
 
 import SwiftUI
 
-struct AddCategoruPopup: View {
+struct AddCategoryPopup: View {
     @Binding var isPresented: Bool
     @State private var newCategoryName = ""
 
@@ -25,13 +25,16 @@ struct AddCategoruPopup: View {
                 Text("What do you want to\nname the category?")
                     .font(.headline)
                     .multilineTextAlignment(.center)
-                    .padding(.top, 20)
+                    .padding(.top, -40)
 
-                FocusableTextField(text: $newCategoryName, placeholder: "Enter a name")
+                TextField("Enter a name", text: $newCategoryName)
+                    .padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
                     .frame(height: 50)
                     .background(RoundedRectangle(cornerRadius: 15).stroke(Color.gray, lineWidth: 1))
                     .padding(.bottom, 20)
-                    .padding(.horizontal, 20)
+                    .padding(.horizontal, 30)
+                    .autocapitalization(.none)
+                    .disableAutocorrection(true)
 
                 Button(action: {
                     if !newCategoryName.isEmpty {
@@ -49,17 +52,14 @@ struct AddCategoruPopup: View {
                         .padding()
                         .background(RoundedRectangle(cornerRadius: 15).stroke(Color.purple, lineWidth: 1))
                 }
-                .padding(.horizontal)
+                .padding(.horizontal, 30)
                 .padding(.bottom, 30)
             }
-            .frame(width: UIScreen.main.bounds.width - 60)
-
+            .frame(width: UIScreen.main.bounds.width - 50)
             .background(Color.white)
-            .cornerRadius(20)
-            .shadow(radius: 10)
+            .cornerRadius(15)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .ignoresSafeArea(.keyboard, edges: .bottom) // Ignore keyboard safe area
     }
 }
-

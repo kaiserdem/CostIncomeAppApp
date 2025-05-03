@@ -1,5 +1,5 @@
 import SwiftUI
-import UIKit
+// import UIKit
 
 struct TransactionListView: View {
     @StateObject private var transactionManager = TransactionManager()
@@ -7,6 +7,7 @@ struct TransactionListView: View {
     @State private var selectedTypeIndex: Int = 0 // 0 - costs, 1 - income
     @State private var showSettings = false
     @State private var showAddCategoryPopup = false
+    @State private var newCategoryName: String = ""
     
     let types: [TransactionType] = [.costs, .income]
     let costsCategories = ["Food", "Home and Life", "Health", "Entertainment", "Other"]
@@ -94,11 +95,11 @@ struct TransactionListView: View {
                     SettingsView()
                 }
                 .sheet(isPresented: $showingAddTransaction) {
-                    AddCategoruPopup(isPresented: $showAddCategoryPopup)
+                    AddCategoryPopup(isPresented: $showAddCategoryPopup)
                 }
 
                 if showAddCategoryPopup {
-                    AddCategoruPopup(isPresented: $showAddCategoryPopup)
+                    AddCategoryPopup(isPresented: $showAddCategoryPopup)
                 }
             }
         }
@@ -298,4 +299,5 @@ struct CategoriesWrapView: View {
         }
     }
 }
+
 
