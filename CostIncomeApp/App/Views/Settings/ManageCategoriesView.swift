@@ -51,42 +51,44 @@ struct ManageCategoriesView: View {
                     VStack(spacing: 12) {
                         ForEach(categories, id: \.self) { category in
                             ZStack {
-                                
-                                
-                                HStack {
-                                    Text(category)
-                                        .font(.custom("CabinetGrotesk-Variable", size: 16))
-                                        .foregroundColor(.black)
-                                        .frame(width:  UIScreen.main.bounds.width - 90, height: 20)
-                                        .padding(.horizontal, 16)
-                                        .padding(.vertical, 12)
-                                        .background(Color.white)
-                                        .cornerRadius(8)
-                                    
-                                    Button(action: {
-                                        editingCategory = category
-                                        newCategoryName = category
-                                        showingEditAlert = true
-                                    }) {
-                                        Image("Frame 553")
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fit)
-                                            .frame(width: 45, height: 45)
-                                    }
-                                    
-                                    Button(action: {
-                                        if let index = categories.firstIndex(of: category) {
-                                            categories.remove(at: index)
-                                            UserDefaults.standard.set(categories, forKey: "categories")
+                                GeometryReader { geometry in
+                                    HStack {
+                                        Text(category)
+                                            .font(.custom("CabinetGrotesk-Variable", size: 16))
+                                            .foregroundColor(.black)
+                                            .frame(width: UIScreen.main.bounds.width - 170, height: 20)
+                                            .frame(maxWidth: .infinity, alignment: .leading)
+                                            .padding(.horizontal, 16)
+                                            .padding(.vertical, 12)
+                                            .background(Color.white)
+                                            .cornerRadius(12)
+                                        
+                                        Button(action: {
+                                            editingCategory = category
+                                            newCategoryName = category
+                                            showingEditAlert = true
+                                        }) {
+                                            Image("Frame 553")
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                                .frame(width: 45, height: 45)
                                         }
-                                    }) {
-                                        Image("Frame 554")
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fit)
-                                            .frame(width: 45, height: 45)
+                                        
+                                        Button(action: {
+                                            if let index = categories.firstIndex(of: category) {
+                                                categories.remove(at: index)
+                                                UserDefaults.standard.set(categories, forKey: "categories")
+                                            }
+                                        }) {
+                                            Image("Frame 554")
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                                .frame(width: 45, height: 45)
+                                        }
                                     }
+                                    .padding(.trailing, 28)
                                 }
-                                .padding(.trailing, 8)
+                                .frame(height: 45)
                             }
                             .padding(.horizontal)
                         }
@@ -94,7 +96,7 @@ struct ManageCategoriesView: View {
                     .padding(.top, 20)
                 }
                 
-              //  Spacer()
+                Spacer()
             }
             .navigationBarHidden(true)
             .navigationBarBackButtonHidden(true)
