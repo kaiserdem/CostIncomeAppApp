@@ -189,7 +189,7 @@ struct TransactionListView: View {
                                                 VStack(alignment: .trailing) {
                                                     Text(currencyService.formatAmount(transaction.amount))
                                                         .foregroundColor(.black)
-                                                    Text(transaction.date, style: .date)
+                                                    Text(formatDate(transaction.date))
                                                         .font(.custom("Rubik-Regular", size: 16))
                                                         .foregroundColor(.gray)
                                                 }
@@ -319,6 +319,12 @@ struct TransactionListView: View {
         let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let fileURL = documentsDirectory.appendingPathComponent(imageName)
         return UIImage(contentsOfFile: fileURL.path)
+    }
+    
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd.MM"
+        return formatter.string(from: date)
     }
 }
 
