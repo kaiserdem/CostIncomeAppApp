@@ -178,24 +178,39 @@ struct AddNewItemView: View {
                             .padding(.horizontal, 30)
                             .foregroundColor(.gray)
                         
-                        ScrollView {
-                            VStack(spacing: 10) {
-                                ForEach(viewModel.categories, id: \.self) { category in
-                                    Button(action: {
-                                        selectedCategory = category
-                                        categoryTapped()
-                                        
-                                    }) {
-                                        Text(category)
-                                            .foregroundColor(Color(hex: "D44891"))
-                                            .frame(maxWidth: .infinity)
-                                            .frame(height: 50)
-                                            .font(.custom("Rubik-Regular", size: 20))
-
-                                            .background(RoundedRectangle(cornerRadius: 15).stroke(Color(hex: "D44891"), lineWidth: 1))
+                        let screenWidth = UIScreen.main.bounds.width
+                        let minItemWidth: CGFloat = 120
+                        let spacing: CGFloat = 8
+                        let countInRow = 2
+                        let rows = chunked(viewModel.categories, size: countInRow)
+                        
+                        VStack(alignment: .leading, spacing: spacing) {
+                            ForEach(rows, id: \.self) { row in
+                                HStack(spacing: spacing) {
+                                    ForEach(row, id: \.self) { category in
+                                        Button(action: {
+                                            selectedCategory = category
+                                            categoryTapped()
+                                        }) {
+                                            HStack(spacing: 4) {
+                                                Text(category)
+                                                    .font(.custom("Rubik-Regular", size: 16))
+                                                    .foregroundColor(Color(hex: "D44891"))
+                                                    .lineLimit(1)
+                                                    .truncationMode(.tail)
+                                            }
+                                            .padding(.horizontal, 16)
+                                            .frame(height: 48)
+                                            .background(Color.white.opacity(0.7))
+                                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 12)
+                                                    .stroke(Color(hex: "D44891"), lineWidth: 1)
+                                            )
+                                        }
                                     }
-                                    .padding(.horizontal, 30)
                                 }
+                                .padding(.horizontal)
                             }
                         }
                         .padding(.bottom, imageName == nil ? 0 : 70)
@@ -210,7 +225,6 @@ struct AddNewItemView: View {
                                     .frame(maxWidth: .infinity)
                                     .background(Color(hex: "8948FF"))
                                     .font(.custom("Rubik-Regular", size: 20))
-
                                     .cornerRadius(15)
                                     .padding(.horizontal, 28)
                                     .padding(.bottom, 80)
@@ -319,5 +333,11 @@ struct AddNewItemView: View {
         viewModel.transactionManager.addTransaction(transaction!)
         print("V. Setting isPresented to false")
         isPresented = false
+    }
+    
+    private func chunked<T>(_ array: [T], size: Int) -> [[T]] {
+        stride(from: 0, to: array.count, by: size).map {
+            Array(array[$0..<min($0 + size, array.count)])
+        }
     }
 }
