@@ -31,7 +31,7 @@ struct PrivacyPolicyView: View {
                     
                     Spacer()
                     Text("Privacy Policy")
-                        .font(.custom("CabinetGrotesk-Variable", size: 24))
+                        .font(.custom("Rubik-VariableFont_wght", size: 24))
                         .foregroundColor(.black)
                     
                     Spacer()

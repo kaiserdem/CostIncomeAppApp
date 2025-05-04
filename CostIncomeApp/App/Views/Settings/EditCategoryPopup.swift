@@ -34,12 +34,12 @@ struct EditCategoryPopup: View {
                     }
                     
                     Text("Enter a new category\n name")
-                        .font(.custom("CabinetGrotesk-Variable", size: 24))
+                        .font(.custom("Rubik-VariableFont_wght", size: 24))
                         .multilineTextAlignment(.center)
                         .padding(.top, -40)
                     
                     TextField("Enter a name", text: $newCategoryName)
-                        .font(.custom("CabinetGrotesk-Variable", size: 16))
+                        .font(.custom("Rubik-VariableFont_wght", size: 16))
                         .padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
                         .frame(height: 50)
                         .background(RoundedRectangle(cornerRadius: 15).stroke(Color.gray, lineWidth: 1))

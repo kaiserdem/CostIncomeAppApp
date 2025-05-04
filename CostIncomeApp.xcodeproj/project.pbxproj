@@ -10,9 +10,22 @@
 		057F9DB52DC4F67000C2420F /* CostIncomeApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CostIncomeApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		05DB3B5C2DC659D10056D11D /* Exceptions for "CostIncomeApp" folder in "CostIncomeApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 057F9DB42DC4F67000C2420F /* CostIncomeApp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		057F9DB72DC4F67000C2420F /* CostIncomeApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				05DB3B5C2DC659D10056D11D /* Exceptions for "CostIncomeApp" folder in "CostIncomeApp" target */,
+			);
 			path = CostIncomeApp;
 			sourceTree = "<group>";
 		};
@@ -254,6 +267,8 @@
 				DEVELOPMENT_TEAM = YHUMVG95RT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CostIncomeApp/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Додатку потрібен доступ до камери для зйомки фото";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -287,6 +302,8 @@
 				DEVELOPMENT_TEAM = YHUMVG95RT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CostIncomeApp/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Додатку потрібен доступ до камери для зйомки фото";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

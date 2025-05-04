@@ -1,5 +1,66 @@
+#if canImport(UIKit)
+import UIKit
+#endif
 import SwiftUI
 import Combine
+import AVFoundation
+
+#if canImport(UIKit)
+struct ImagePicker: UIViewControllerRepresentable {
+    @Binding var image: UIImage?
+    @Environment(\.presentationMode) var presentationMode
+    var sourceType: UIImagePickerController.SourceType = .camera
+    var onImageSaved: ((String) -> Void)?
+    
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.delegate = context.coordinator
+        picker.sourceType = sourceType
+        picker.modalPresentationStyle = .fullScreen
+        return picker
+    }
+    
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+        let parent: ImagePicker
+        
+        init(_ parent: ImagePicker) {
+            self.parent = parent
+        }
+        
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+            if let image = info[.originalImage] as? UIImage {
+                parent.image = image
+                let imageName = saveImage(image)
+                parent.onImageSaved?(imageName)
+            }
+            parent.presentationMode.wrappedValue.dismiss()
+        }
+        
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            parent.presentationMode.wrappedValue.dismiss()
+        }
+        
+        private func saveImage(_ image: UIImage) -> String {
+            guard let data = image.jpegData(compressionQuality: 0.8) else { return "" }
+            let imageName = "\(UUID().uuidString).jpg"
+            let filename = getDocumentsDirectory().appendingPathComponent(imageName)
+            try? data.write(to: filename)
+            return imageName
+        }
+        
+        private func getDocumentsDirectory() -> URL {
+            FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        }
+    }
+}
+#endif
+
 
 struct TransactionListView: View {
     @EnvironmentObject var viewModel: TransactionViewModel
@@ -8,6 +69,12 @@ struct TransactionListView: View {
     @State private var showSettings = false
     @State private var showAddCategoryPopup = false
     @State private var newCategoryName: String = ""
+    @State private var showingImagePicker = false
+    @State private var capturedImageName: String?
+    @State private var showingAddNewItem = false
+    #if canImport(UIKit)
+    @State private var inputImage: UIImage?
+    #endif
     
     let types: [TransactionType] = [.costs, .income]
     
@@ -112,23 +179,20 @@ struct TransactionListView: View {
                     Spacer()
                     HStack(spacing: 8) {
                         Button(action: {
-                            
+                            checkCameraPermission()
                         }) {
                             Image("Buuton")
                                 .resizable()
                                 .frame(width: 75, height: 78)
-                            
                         }
                         
                         Button(action: {
-                            
+                            showingAddNewItem = true
                         }) {
                             Image("Buuton-2")
                                 .resizable()
                                 .frame(width: UIScreen.main.bounds.width - 100, height: 78)
-                            
                         }
-                        
                     }
                     .padding(.bottom, 30)
                     .padding(.horizontal, 0)
@@ -137,10 +201,30 @@ struct TransactionListView: View {
                 if viewModel.showAddCategoryPopup {
                     AddCategoryPopup(isPresented: $viewModel.showAddCategoryPopup)
                 }
+                
+                if showingAddNewItem {
+                    
+                    if capturedImageName != nil {
+                        AddNewItemView(isPresented: $showingAddNewItem, imageName: capturedImageName)
+
+                    } else {
+                        AddNewItemView(isPresented: $showingAddNewItem)
+
+                    }
+                    
+                }
             }
             .onAppear {
                 viewModel.updateCategories()
             }
+            #if canImport(UIKit)
+            .sheet(isPresented: $showingImagePicker) {
+                ImagePicker(image: $inputImage, onImageSaved: { imageName in
+                    capturedImageName = imageName
+                    showingAddNewItem = true
+                })
+            }
+            #endif
         }
     }
     
@@ -162,6 +246,28 @@ struct TransactionListView: View {
         formatter.minimumFractionDigits = 2
         formatter.decimalSeparator = ","
         return formatter.string(from: NSNumber(value: balance)) ?? "$ 0,00"
+    }
+    
+    private func checkCameraPermission() {
+        #if canImport(UIKit)
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized:
+            showingImagePicker = true
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { granted in
+                if granted {
+                    DispatchQueue.main.async {
+                        showingImagePicker = true
+                    }
+                }
+            }
+        case .denied, .restricted:
+            // Показати повідомлення про те, що потрібен доступ до камери
+            break
+        @unknown default:
+            break
+        }
+        #endif
     }
 }
 

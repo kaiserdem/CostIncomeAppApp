@@ -1,6 +1,5 @@
 import SwiftUI
 
-
 struct ManageCategoriesView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var categories: [String] = []
@@ -34,7 +33,7 @@ struct ManageCategoriesView: View {
                     
                     Spacer()
                     Text("Manage Categories")
-                        .font(.custom("CabinetGrotesk-Variable", size: 24))
+                        .font(.custom("Rubik-VariableFont_wght", size: 24))
                         .foregroundColor(.black)
                     
                     Spacer()
@@ -55,7 +54,7 @@ struct ManageCategoriesView: View {
                                 GeometryReader { geometry in
                                     HStack {
                                         Text(category)
-                                            .font(.custom("CabinetGrotesk-Variable", size: 16))
+                                            .font(.custom("Rubik-VariableFont_wght", size: 16))
                                             .foregroundColor(.black)
                                             .frame(width: geometry.size.width - 170, height: 20)
                                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -101,16 +100,5 @@ struct ManageCategoriesView: View {
             .navigationBarHidden(true)
             .navigationBarBackButtonHidden(true)
         }
-        .overlay(
-            Group {
-                if showingEditPopup, let category = editingCategory {
-                    EditCategoryPopup(
-                        isPresented: $showingEditPopup,
-                        categories: $categories,
-                        oldCategory: category
-                    )
-                }
-            }
-        )
     }
 }
