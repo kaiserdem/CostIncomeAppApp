@@ -3,7 +3,7 @@ import SwiftUI
 struct AddCategoryPopup: View {
     @Binding var isPresented: Bool
     @State private var newCategoryName = ""
-    @StateObject private var viewModel = TransactionViewModel()
+    @EnvironmentObject var viewModel: TransactionViewModel
 
     var body: some View {
         ZStack {
@@ -39,6 +39,7 @@ struct AddCategoryPopup: View {
                 Button(action: {
                     if !newCategoryName.isEmpty {
                         viewModel.addCategory(newCategoryName)
+                        viewModel.updateCategories()
                         newCategoryName = ""
                         isPresented = false
                     }

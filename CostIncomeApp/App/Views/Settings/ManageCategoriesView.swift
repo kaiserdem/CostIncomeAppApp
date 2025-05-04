@@ -56,7 +56,7 @@ struct ManageCategoriesView: View {
                                         Text(category)
                                             .font(.custom("Rubik-Regular", size: 20))
                                             .foregroundColor(.black)
-                                            .frame(width: geometry.size.width - 170, height: 20)
+                                            .frame(width: geometry.size.width - 140, height: 20)
                                             .frame(maxWidth: .infinity, alignment: .leading)
                                             .multilineTextAlignment(.leading)
                                             .padding(.horizontal, 16)
