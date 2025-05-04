@@ -364,7 +364,7 @@ struct CategoriesWrapView: View {
         let screenWidth = UIScreen.main.bounds.width
         let minItemWidth: CGFloat = 120
         let spacing: CGFloat = 8
-        let countInRow = max(1, Int((screenWidth + spacing) / (minItemWidth + spacing)))
+        let countInRow = 2
         let allItems = ["+"] + viewModel.categories
         let rows = chunked(allItems, size: countInRow)
         
