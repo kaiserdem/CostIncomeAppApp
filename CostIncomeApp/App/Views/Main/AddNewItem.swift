@@ -41,12 +41,24 @@ class ImagePickerCoordinator: NSObject, UIImagePickerControllerDelegate, UINavig
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        print("1. ImagePickerController didFinishPickingMediaWithInfo")
         if let image = info[.originalImage] as? UIImage {
+            print("2. Got image from picker")
             let imageName = saveImage(image)
-            parent.writeTramsaction(type: .costs)
-            parent.isPresented = false
+            print("3. Saved image with name: \(imageName)")
+            DispatchQueue.main.async {
+                print("4. Inside DispatchQueue.main.async")
+                self.parent.imageName = imageName
+                print("5. Set imageName to parent: \(String(describing: self.parent.imageName))")
+                self.parent.writeTramsaction(type: .costs)
+                print("6. Called writeTransaction")
+                self.parent.isPresented = false
+                print("7. Set isPresented to false")
+            }
         }
+        print("8. Before picker.dismiss")
         picker.dismiss(animated: true)
+        print("9. After picker.dismiss")
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -54,10 +66,15 @@ class ImagePickerCoordinator: NSObject, UIImagePickerControllerDelegate, UINavig
     }
     
     private func saveImage(_ image: UIImage) -> String {
-        guard let data = image.jpegData(compressionQuality: 0.8) else { return "" }
+        print("A. Starting saveImage")
+        guard let data = image.jpegData(compressionQuality: 0.8) else { 
+            print("B. Failed to get jpeg data")
+            return "" 
+        }
         let imageName = "\(UUID().uuidString).jpg"
         let filename = getDocumentsDirectory().appendingPathComponent(imageName)
         try? data.write(to: filename)
+        print("C. Saved image to: \(filename.path)")
         return imageName
     }
     
@@ -76,19 +93,21 @@ extension AddNewItemView {
 
 struct AddNewItemView: View {
     @Binding var isPresented: Bool
-    var imageName: String?
+    @State var imageName: String?
     @State private var name: String = ""
     @State private var amount: String = ""
     @State var state: AddItemState = .fields
     @State private var selectedCategory: String = ""
     @EnvironmentObject var viewModel: TransactionViewModel
     @FocusState private var isAmountFocused: Bool
+    @State private var showingImagePicker = false
+    @State private var inputImage: UIImage?
     
     let withPhotos = UserDefaults.standard.object(forKey: "AlwaysAddPhotos") as? Bool ?? true
     
     init(isPresented: Binding<Bool>, imageName: String? = nil) {
         self._isPresented = isPresented
-        self.imageName = imageName
+        self._imageName = State(initialValue: imageName)
     }
     
     var body: some View {
@@ -142,6 +161,7 @@ struct AddNewItemView: View {
                         }) {
                             Text("+ Add")
                                 .foregroundColor(.white)
+                                .font(.custom("Rubik-Regular", size: 20))
                                 .frame(height: 50)
                                 .frame(maxWidth: .infinity)
                                 .background(Color(hex: "8948FF"))
@@ -154,6 +174,7 @@ struct AddNewItemView: View {
                     case .category:
                         Text("Choose which category you want \n your costs to fall into")
                             .multilineTextAlignment(.center)
+                            .font(.custom("Rubik-Regular", size: 20))
                             .padding(.horizontal, 30)
                             .foregroundColor(.gray)
                         
@@ -169,6 +190,8 @@ struct AddNewItemView: View {
                                             .foregroundColor(Color(hex: "D44891"))
                                             .frame(maxWidth: .infinity)
                                             .frame(height: 50)
+                                            .font(.custom("Rubik-Regular", size: 20))
+
                                             .background(RoundedRectangle(cornerRadius: 15).stroke(Color(hex: "D44891"), lineWidth: 1))
                                     }
                                     .padding(.horizontal, 30)
@@ -186,6 +209,8 @@ struct AddNewItemView: View {
                                     .frame(height: 50)
                                     .frame(maxWidth: .infinity)
                                     .background(Color(hex: "8948FF"))
+                                    .font(.custom("Rubik-Regular", size: 20))
+
                                     .cornerRadius(15)
                                     .padding(.horizontal, 28)
                                     .padding(.bottom, 80)
@@ -197,12 +222,7 @@ struct AddNewItemView: View {
                         
                         VStack {
                             Button(action: {
-                                #if canImport(UIKit)
-                                let imagePicker = UIImagePickerController()
-                                imagePicker.sourceType = .photoLibrary
-                                imagePicker.delegate = coordinator
-                                UIApplication.shared.windows.first?.rootViewController?.present(imagePicker, animated: true)
-                                #endif
+                                showingImagePicker = true
                             }) {
                                 Image("dqwdqwedqwed1")
                                     .resizable()
@@ -211,12 +231,7 @@ struct AddNewItemView: View {
                             .padding(.top, 12)
                             
                             Button(action: {
-                                #if canImport(UIKit)
-                                let imagePicker = UIImagePickerController()
-                                imagePicker.sourceType = .camera
-                                imagePicker.delegate = coordinator
-                                UIApplication.shared.windows.first?.rootViewController?.present(imagePicker, animated: true)
-                                #endif
+                                showingImagePicker = true
                             }) {
                                 Image("dqwdqwedqwed2")
                                     .resizable()
@@ -248,6 +263,15 @@ struct AddNewItemView: View {
             print("imageName:\(String(describing: imageName))")
             print("withPhotos \(String(describing: withPhotos))")
         }
+        #if canImport(UIKit)
+        .sheet(isPresented: $showingImagePicker) {
+            ImagePicker(image: $inputImage, onImageSaved: { savedImageName in
+                imageName = savedImageName
+                writeTramsaction(type: .costs)
+                isPresented = false
+            })
+        }
+        #endif
     }
     
     func categoryTapped() {
@@ -265,17 +289,23 @@ struct AddNewItemView: View {
     
     
     func writeTramsaction(type: TransactionType) {
-        guard let amountDouble = Double(amount) else { return }
+        print("X. Starting writeTransaction")
+        guard let amountDouble = Double(amount) else { 
+            print("Y. Failed to convert amount to Double")
+            return 
+        }
         
         var transaction: Transaction?
         
         if type == .income {
+            print("Z1. Creating income transaction")
             transaction = Transaction(
                 amount: amountDouble,
                 type: .income,
                 name: name.isEmpty ? "Transaction" : name,
                 date: Date())
         } else {
+            print("Z2. Creating costs transaction with imageName: \(String(describing: imageName))")
             transaction = Transaction(
                amount: amountDouble,
                type: .costs,
@@ -285,7 +315,9 @@ struct AddNewItemView: View {
                imageName: imageName)
         }
         
+        print("W. Adding transaction to manager")
         viewModel.transactionManager.addTransaction(transaction!)
+        print("V. Setting isPresented to false")
         isPresented = false
     }
 }

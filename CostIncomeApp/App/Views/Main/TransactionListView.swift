@@ -203,6 +203,7 @@ struct TransactionListView: View {
                                             .frame(height: 300)
                                     }
                                     .padding(.vertical, 8)
+                                    .scrollIndicators(.hidden)
                                 }
                             }
                         }
@@ -215,6 +216,7 @@ struct TransactionListView: View {
                         Spacer()
                     }
                     .padding(.top, 24)
+                    .scrollIndicators(.hidden)
                     .edgesIgnoringSafeArea(.bottom)
                 }
                 VStack {

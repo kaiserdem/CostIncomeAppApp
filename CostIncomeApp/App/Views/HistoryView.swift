@@ -35,6 +35,7 @@ struct HistoryView: View {
                     Text("History")
                         .font(.custom("Rubik-Regular", size: 24))
                         .foregroundColor(.black)
+                        .offset(x: -15)
                     
                     Spacer()
                     

@@ -45,8 +45,10 @@ struct SettingsView: View {
                     
                     Spacer()
                     Text("Settings")
-                        .font(.custom("Rubik-Regular", size: 24))
+                        .font(.custom("Rubik-Regular", size: 20))
                         .foregroundColor(.black)
+                        .offset(x: -15)
+
                     
                     Spacer()
                     
@@ -65,6 +67,10 @@ struct SettingsView: View {
                         HStack {
                             Text("Always add photos")
                                 .foregroundColor(.black)
+                                .font(.custom("Rubik-Regular", size: 16))
+                                .lineLimit(nil)
+                                .minimumScaleFactor(0.5)
+
                                 .padding(.leading, 20)
                             Spacer()
                             Toggle("", isOn: $isToggled)
@@ -86,10 +92,14 @@ struct SettingsView: View {
                                 Text("Currency")
                                     .foregroundColor(.black)
                                     .padding(.leading, 20)
+                                    .font(.custom("Rubik-Regular", size: 16))
+
                                 Spacer()
                                 
                                 Text(currencyService.selectedCurrency.symbol)
                                     .foregroundColor(.black)
+                                    .font(.custom("Rubik-Regular", size: 20))
+
                                     .padding(.leading, 5)
                                 
                                 Image("23432CaretLeft")
@@ -113,6 +123,10 @@ struct SettingsView: View {
                                     Text("Manage Categories")
                                         .foregroundColor(.black)
                                         .padding(.leading, 20)
+                                        .font(.custom("Rubik-Regular", size: 16))
+
+                                        .lineLimit(nil)
+                                        .minimumScaleFactor(0.5)
                                     Spacer()
                                     Image("23432CaretLeft")
                                         .resizable()
@@ -128,24 +142,30 @@ struct SettingsView: View {
                         }
                         
                         // Четверта кнопка
-                        Button(action: {
-                            privacyPolicyView = true
-                        }) {
-                            HStack {
-                                Text("Privacy Policy")
-                                    .foregroundColor(.black)
-                                    .padding(.leading, 20)
-                                Spacer()
-                                Image("23432CaretLeft")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 20, height: 20)
-                                    .foregroundColor(.black)
-                                    .padding(.trailing, 20)
+                       
+                        NavigationLink(destination: PrivacyPolicyView(), isActive: $privacyPolicyView) {
+                            Button(action: {
+                                privacyPolicyView = true
+                            }) {
+                                HStack {
+                                    Text("Privacy Policy")
+                                        .foregroundColor(.black)
+                                        .font(.custom("Rubik-Regular", size: 16))
+
+                                        .padding(.leading, 20)
+                                    Spacer()
+                                    Image("23432CaretLeft")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 20, height: 20)
+                                        .foregroundColor(.black)
+                                        .padding(.trailing, 20)
+                                }
+                                .frame(height: 50)
+                                .background(Color.white)
+
+                                .cornerRadius(10)
                             }
-                            .frame(height: 50)
-                            .background(Color.white)
-                            .cornerRadius(10)
                         }
                     }
                     .padding()
@@ -171,7 +191,7 @@ struct CurrencyPickerSheet: View {
             HStack {
                 Spacer()
                 Text("Currency")
-                    .font(.custom("Rubik-Regular", size: 16))
+                    .font(.custom("Rubik-Regular", size: 20))
                     .frame(maxWidth: .infinity)
                     .offset(x: 25)
                 
@@ -192,8 +212,12 @@ struct CurrencyPickerSheet: View {
                         Text(currency.symbol)
                             .frame(width: 30)
                             .foregroundStyle(.purple)
+                            .font(.custom("Rubik-Regular", size: 20))
+
                         Text(currency.rawValue)
                             .foregroundStyle(.purple)
+                            .font(.custom("Rubik-Regular", size: 20))
+
                     }
                     .tag(currency)
                 }

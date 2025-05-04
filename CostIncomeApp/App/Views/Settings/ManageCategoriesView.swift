@@ -54,7 +54,7 @@ struct ManageCategoriesView: View {
                                 GeometryReader { geometry in
                                     HStack {
                                         Text(category)
-                                           
+                                            .font(.custom("Rubik-Regular", size: 20))
                                             .foregroundColor(.black)
                                             .frame(width: geometry.size.width - 170, height: 20)
                                             .frame(maxWidth: .infinity, alignment: .leading)
