@@ -152,7 +152,7 @@ struct TransactionListView: View {
                             if viewModel.filteredTransactions().isEmpty {
                                 Color.white
                                     .frame(maxWidth: .infinity, minHeight: 400, maxHeight: .infinity)
-                                    .background(Color.white)
+                                    .background(Color.white.opacity(0.8))
                             } else {
                                 ScrollView {
                                     VStack(spacing: 8) {
@@ -188,26 +188,27 @@ struct TransactionListView: View {
                                                 
                                                 VStack(alignment: .trailing) {
                                                     Text(currencyService.formatAmount(transaction.amount))
-                                                        .foregroundColor(transaction.type == .income ? .green : .red)
+                                                        .foregroundColor(.black)
                                                     Text(transaction.date, style: .date)
                                                         .font(.caption)
                                                         .foregroundColor(.gray)
                                                 }
                                             }
                                             .padding(.vertical, 8)
-                                            .background(Color.white.opacity(0.8))
+                                            //.background(Color.white.opacity(0.5))
                                             .cornerRadius(10)
                                             .padding(.horizontal)
                                         }
-                                        Color(.white)
+                                        Color.white
+                                            .opacity(0.1)
                                             .frame(height: 100)
                                     }
                                     .padding(.vertical, 8)
                                 }
-                                .background(Color.white)
+                                //.background(Color.white)
                             }
                         }
-                        .background(Color.white)
+                        .background(Color.white.opacity(0.8))
                         .cornerRadius(20, corners: [.topLeft, .topRight])
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .edgesIgnoringSafeArea(.bottom)
