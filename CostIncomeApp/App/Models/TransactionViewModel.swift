@@ -44,12 +44,6 @@ class TransactionViewModel: ObservableObject {
     
     func balanceString(for type: TransactionType) -> String {
         let balance = transactionManager.transactions.filter { $0.type == type }.reduce(0) { $0 + $1.amount }
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencySymbol = "$ "
-        formatter.maximumFractionDigits = 2
-        formatter.minimumFractionDigits = 2
-        formatter.decimalSeparator = ","
-        return formatter.string(from: NSNumber(value: balance)) ?? "$ 0,00"
+        return CurrencyService.shared.formatAmount(balance)
     }
 } 

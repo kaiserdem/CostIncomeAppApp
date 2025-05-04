@@ -1,41 +1,37 @@
+#if canImport(UIKit)
+import UIKit
+#endif
 import SwiftUI
-import Foundation
 
 struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
+    @StateObject private var currencyService = CurrencyService.shared
     
     @State private var isToggled = true
-    @State private var selectedCurrency: TransactionCurrency = .usd
     @State private var showCurrencyPicker = false
     @State private var showCurrencySheet = false
     @State private var showManageCategoriesView = false
     @State private var privacyPolicyView = false
 
     init() {
-           if let savedValue = UserDefaults.standard.string(forKey: "SelectedCurrency"),
-              let savedCurrency = TransactionCurrency(rawValue: savedValue) {
-               _selectedCurrency = State(initialValue: savedCurrency)
-           }
-        
-      
-            if let savedValue = UserDefaults.standard.object(forKey: "AlwaysAddPhotos") as? Bool {
-                _isToggled = State(initialValue: savedValue)
-            } else {
-                _isToggled = State(initialValue: true)
-            }
-        
+        if let savedValue = UserDefaults.standard.object(forKey: "AlwaysAddPhotos") as? Bool {
+            _isToggled = State(initialValue: savedValue)
+        } else {
+            _isToggled = State(initialValue: true)
+        }
     }
     
     var body: some View {
-        
         ZStack {
             Image("bfwefewwg")
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .edgesIgnoringSafeArea(.all)
-            Color.white
-                .opacity(0.6) // налаштовуємо прозорість
-                .edgesIgnoringSafeArea(.all)
+            Rectangle()
+                        .fill(Color.white.opacity(0.5))
+                        .edgesIgnoringSafeArea(.all)
+            
+            
             VStack {
                 HStack {
                     Button(action: {
@@ -60,80 +56,42 @@ struct SettingsView: View {
                 
                 Rectangle()
                     .fill(Color.gray)
-                    .frame(height: 1) // тонка лінія
+                    .frame(height: 1)
                     .edgesIgnoringSafeArea(.horizontal)
                 
-                
-                
-                VStack(spacing: 16) {
-                            // Перша кнопка
-        
-                            Button(action: {
-                                print("перед зміною: \(isToggled)")
-                                isToggled.toggle()
-                                print("після зміни: \(isToggled)")
-                                UserDefaults.standard.set(isToggled, forKey: "AlwaysAddPhotos")
-                                print("Збережено: \(isToggled)")
-                                
-                            }) {
-                                HStack {
-                                    Text("Always add photos")
-                                        .foregroundColor(.black)
-                                        .padding(.leading, 20)
-                                    Spacer()
-                                    Image(isToggled ? "Toggle" : "Toggle-3")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 50, height: 30)
-                                        .foregroundColor(.black)
-                                        .padding(.trailing, 20)
-                                        
-                                }
-                                .frame(height: 50)
-                                .background(Color.white)
-                                .cornerRadius(10)
-                            }
-                    
-                    
-                    
-                            // Друга кнопка
-                            Button(action: {
-                                showCurrencySheet = true
-                            }) {
-                                HStack {
-                                    Text("Currency")
-                                        .foregroundColor(.black)
-                                        .padding(.leading, 20)
-                                    Spacer()
-                                    
-                                    Text(selectedCurrency.symbol)
-                                        .foregroundColor(.black)
-                                        .padding(.leading, 5)
-                                    
-                                    Image("23432CaretLeft")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 20, height: 20)
-                                        .foregroundColor(.black)
-                                        .padding(.trailing, 20)
-                                }
-                                .frame(height: 50)
-                                .background(Color.white)
-                                .cornerRadius(10)
-                            }
-                           
-                    
-                    
-                    // Третя кнопка
-                    NavigationLink(destination: ManageCategoriesView(), isActive: $showManageCategoriesView) {
+                ScrollView {
+                    VStack(spacing: 16) {
+                        // Перша кнопка
+                        HStack {
+                            Text("Always add photos")
+                                .foregroundColor(.black)
+                                .padding(.leading, 20)
+                            Spacer()
+                            Toggle("", isOn: $isToggled)
+                                .toggleStyle(SwitchToggleStyle(tint: Color(hex: "8948FF")))
+                                .padding(.trailing, 20)
+                        }
+                        .frame(height: 50)
+                        .background(Color.white)
+                        .cornerRadius(10)
+                        .onChange(of: isToggled) { newValue in
+                            UserDefaults.standard.set(newValue, forKey: "AlwaysAddPhotos")
+                        }
+                        
+                        // Друга кнопка
                         Button(action: {
-                            showManageCategoriesView = true
+                            showCurrencySheet = true
                         }) {
                             HStack {
-                                Text("Manage categories")
+                                Text("Currency")
                                     .foregroundColor(.black)
                                     .padding(.leading, 20)
                                 Spacer()
+                                
+                                Text(currencyService.selectedCurrency.symbol)
+                                    .foregroundColor(.black)
+                                    .padding(.leading, 5)
+                                
                                 Image("23432CaretLeft")
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
@@ -145,14 +103,31 @@ struct SettingsView: View {
                             .background(Color.white)
                             .cornerRadius(10)
                         }
-                        .padding(.top, 12)
-                        .padding(.trailing, 0)
                         
-                    }
-                       
-                           
-                            // Четверта кнопка
-                    NavigationLink(destination: PrivacyPolicyView(), isActive: $privacyPolicyView) {
+                        // Третя кнопка
+                        NavigationLink(destination: ManageCategoriesView(), isActive: $showManageCategoriesView) {
+                            Button(action: {
+                                showManageCategoriesView = true
+                            }) {
+                                HStack {
+                                    Text("Manage Categories")
+                                        .foregroundColor(.black)
+                                        .padding(.leading, 20)
+                                    Spacer()
+                                    Image("23432CaretLeft")
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 20, height: 20)
+                                        .foregroundColor(.black)
+                                        .padding(.trailing, 20)
+                                }
+                                .frame(height: 50)
+                                .background(Color.white)
+                                .cornerRadius(10)
+                            }
+                        }
+                        
+                        // Четверта кнопка
                         Button(action: {
                             privacyPolicyView = true
                         }) {
@@ -172,21 +147,17 @@ struct SettingsView: View {
                             .background(Color.white)
                             .cornerRadius(10)
                         }
-                        .padding(.top, 12)
-                        .padding(.trailing, 0)
-                        
                     }
-                        }
-                        .padding()
+                    .padding()
+                }
                 
                 Spacer()
-                
             }
+            .navigationBarHidden(true)
+            .navigationBarBackButtonHidden(true)
         }
-        .navigationBarHidden(true)
-        .navigationBarBackButtonHidden(true)
         .sheet(isPresented: $showCurrencySheet) {
-            CurrencyPickerSheet(selectedCurrency: $selectedCurrency, isPresented: $showCurrencySheet)
+            CurrencyPickerSheet(selectedCurrency: $currencyService.selectedCurrency, isPresented: $showCurrencySheet)
         }
     }
 }
@@ -197,12 +168,8 @@ struct CurrencyPickerSheet: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Заголовок
-                        
             HStack {
                 Spacer()
-
-                
                 Text("Currency")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
@@ -219,7 +186,6 @@ struct CurrencyPickerSheet: View {
             .padding(.horizontal)
             .padding(.top)
             
-            // Пікер валют
             Picker("Currency", selection: $selectedCurrency) {
                 ForEach(TransactionCurrency.allCases, id: \.self) { currency in
                     HStack {
@@ -235,12 +201,13 @@ struct CurrencyPickerSheet: View {
             .pickerStyle(.wheel)
             .padding()
             .onChange(of: selectedCurrency) { newValue in
-                UserDefaults.standard.set(newValue.rawValue, forKey: "SelectedCurrency")
+                CurrencyService.shared.updateCurrency(newValue)
             }
             .tint(.purple)
         }
-        .background(Color.red.opacity(0.05)) // Світло-сірий фон
+        .background(Color.red.opacity(0.05))
         .presentationDetents([.fraction(0.33)])
-        //.presentationDragIndicator(.visible)
     }
 }
+
+

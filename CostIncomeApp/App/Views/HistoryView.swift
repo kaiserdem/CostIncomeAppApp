@@ -1,12 +1,12 @@
+#if canImport(UIKit)
+import UIKit
+#endif
 import SwiftUI
 
 struct HistoryView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var viewModel: TransactionViewModel
-    @State private var categories: [String] = []
-    @State private var editingCategory: String?
-    @State private var showingEditPopup = false
-    @State private var newCategoryName = ""
+    @StateObject private var currencyService = CurrencyService.shared
     
     var body: some View {
         ZStack {
@@ -14,6 +14,11 @@ struct HistoryView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .edgesIgnoringSafeArea(.all)
+            
+            Rectangle()
+                        .fill(Color.white.opacity(0.5))
+                        .edgesIgnoringSafeArea(.all)
+            
             
             VStack {
                 HStack {
@@ -45,10 +50,47 @@ struct HistoryView: View {
                 ScrollView {
                     VStack(spacing: 8) {
                         ForEach(viewModel.transactionManager.transactions) { transaction in
-                            TransactionRow(transaction: transaction)
-                                .padding(.horizontal)
+                            HStack {
+                                if let imageName = transaction.imageName {
+                                    if let image = loadImage(imageName) {
+                                        Image(uiImage: image)
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 50, height: 50)
+                                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    }
+                                } else {
+                                    Image(transaction.type == .income ? "income" : "cost")
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 50, height: 50)
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                }
+                                
+                                VStack(alignment: .leading) {
+                                    Text(transaction.name)
+                                        .font(.headline)
+                                    if let category = transaction.category {
+                                        Text(category)
+                                            .font(.subheadline)
+                                            .foregroundColor(.gray)
+                                    }
+                                }
+                                
+                                Spacer()
+                                
+                                VStack(alignment: .trailing) {
+                                    Text(currencyService.formatAmount(transaction.amount))
+                                        .foregroundColor(.black)
+                                    Text(transaction.date, style: .date)
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                }
+                            }
+                            .padding(.vertical, 8)
+                            .cornerRadius(10)
+                            .padding(.horizontal)
                         }
-                       
                     }
                     .padding(.vertical, 8)
                 }
@@ -58,5 +100,11 @@ struct HistoryView: View {
             .navigationBarHidden(true)
             .navigationBarBackButtonHidden(true)
         }
+    }
+    
+    private func loadImage(_ imageName: String) -> UIImage? {
+        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let fileURL = documentsDirectory.appendingPathComponent(imageName)
+        return UIImage(contentsOfFile: fileURL.path)
     }
 }

@@ -64,6 +64,7 @@ struct ImagePicker: UIViewControllerRepresentable {
 
 struct TransactionListView: View {
     @EnvironmentObject var viewModel: TransactionViewModel
+    @StateObject private var currencyService = CurrencyService.shared
     @State private var showingAddTransaction = false
     @State private var selectedTypeIndex: Int = 0 // 0 - costs, 1 - income
     @State private var showSettings = false
@@ -156,8 +157,47 @@ struct TransactionListView: View {
                                 ScrollView {
                                     VStack(spacing: 8) {
                                         ForEach(viewModel.filteredTransactions()) { transaction in
-                                            TransactionRow(transaction: transaction)
-                                                .padding(.horizontal)
+                                            HStack {
+                                                if let imageName = transaction.imageName {
+                                                    if let image = loadImage(imageName) {
+                                                        Image(uiImage: image)
+                                                            .resizable()
+                                                            .scaledToFill()
+                                                            .frame(width: 50, height: 50)
+                                                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                                                    }
+                                                } else {
+                                                    Image(transaction.type == .income ? "income" : "cost")
+                                                        .resizable()
+                                                        .scaledToFill()
+                                                        .frame(width: 50, height: 50)
+                                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                                }
+                                                
+                                                VStack(alignment: .leading) {
+                                                    Text(transaction.name)
+                                                        .font(.headline)
+                                                    if let category = transaction.category {
+                                                        Text(category)
+                                                            .font(.subheadline)
+                                                            .foregroundColor(.gray)
+                                                    }
+                                                }
+                                                
+                                                Spacer()
+                                                
+                                                VStack(alignment: .trailing) {
+                                                    Text(currencyService.formatAmount(transaction.amount))
+                                                        .foregroundColor(transaction.type == .income ? .green : .red)
+                                                    Text(transaction.date, style: .date)
+                                                        .font(.caption)
+                                                        .foregroundColor(.gray)
+                                                }
+                                            }
+                                            .padding(.vertical, 8)
+                                            .background(Color.white.opacity(0.8))
+                                            .cornerRadius(10)
+                                            .padding(.horizontal)
                                         }
                                         Color(.white)
                                             .frame(height: 100)
@@ -273,6 +313,12 @@ struct TransactionListView: View {
         }
         #endif
     }
+    
+    private func loadImage(_ imageName: String) -> UIImage? {
+        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let fileURL = documentsDirectory.appendingPathComponent(imageName)
+        return UIImage(contentsOfFile: fileURL.path)
+    }
 }
 
 // Додаємо розширення для заокруглення тільки верхніх кутів
@@ -305,59 +351,6 @@ struct CustomIndicator: View {
                     selectedIndex = selectedIndex == 0 ? 1 : 0
                 }
             }
-    }
-}
-
-struct TransactionRow: View {
-    let transaction: Transaction
-    
-    var body: some View {
-        HStack {
-            if let imageName = transaction.imageName {
-                if let image = loadImage(imageName) {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 50, height: 50)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                }
-            } else {
-                Image(transaction.type == .income ? "income" : "cost")
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 50, height: 50)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-            }
-            
-            VStack(alignment: .leading) {
-                Text(transaction.name)
-                    .font(.headline)
-                if let category = transaction.category {
-                    Text(category)
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
-                }
-            }
-            
-            Spacer()
-            
-            VStack(alignment: .trailing) {
-                Text(String(format: "%.2f ₴", transaction.amount))
-                    .foregroundColor(transaction.type == .income ? .black : .black)
-                Text(transaction.date, style: .date)
-                    .font(.caption)
-                    .foregroundColor(.gray)
-            }
-        }
-        .padding(.vertical, 8)
-        //.background(Color.white.opacity(0.8))
-        .cornerRadius(10)
-    }
-    
-    private func loadImage(_ imageName: String) -> UIImage? {
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let fileURL = documentsDirectory.appendingPathComponent(imageName)
-        return UIImage(contentsOfFile: fileURL.path)
     }
 }
 
