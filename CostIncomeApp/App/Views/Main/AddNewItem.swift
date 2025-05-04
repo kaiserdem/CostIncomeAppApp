@@ -73,6 +73,7 @@ extension AddNewItemView {
 }
 #endif
 
+
 struct AddNewItemView: View {
     @Binding var isPresented: Bool
     var imageName: String?
@@ -103,7 +104,7 @@ struct AddNewItemView: View {
                         Spacer()
                         
                         Text(state.title)
-                            .font(.custom("Rubik-Regular", size: 16))
+                            .font(.custom("Rubik-Regular", size: 22))
                             .fontWeight(.bold)
                         
                         Spacer()
@@ -233,12 +234,7 @@ struct AddNewItemView: View {
                             .padding(.top, 12)
                         }
                         .padding(.bottom, 60)
-                        
                     }
-                    
-                    
-                    
-                   
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: UIScreen.main.bounds.height * (state.heightMultiplier))
@@ -255,7 +251,6 @@ struct AddNewItemView: View {
     }
     
     func categoryTapped() {
-       // if let withPhotos = withPhotos {
             
             if withPhotos {
                 if imageName == nil {
@@ -266,9 +261,6 @@ struct AddNewItemView: View {
             } else {
                 writeTramsaction(type: .costs)
             }
-//        } else {
-//            writeTramsaction(type: .costs)
-//        }
     }
     
     
