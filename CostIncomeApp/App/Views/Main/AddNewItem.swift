@@ -101,6 +101,7 @@ struct AddNewItemView: View {
     @EnvironmentObject var viewModel: TransactionViewModel
     @FocusState private var isAmountFocused: Bool
     @State private var showingImagePicker = false
+    @State private var showingCameraPicker = false
     @State private var inputImage: UIImage?
     
     let withPhotos = UserDefaults.standard.object(forKey: "AlwaysAddPhotos") as? Bool ?? true
@@ -256,7 +257,7 @@ struct AddNewItemView: View {
                             .padding(.top, 12)
                             
                             Button(action: {
-                                showingImagePicker = true
+                                showingCameraPicker = true
                             }) {
                                 Image("dqwdqwedqwed2")
                                     .resizable()
@@ -296,6 +297,13 @@ struct AddNewItemView: View {
                 isPresented = false
             })
         }
+        .sheet(isPresented: $showingCameraPicker) {
+            ImagePicker(image: $inputImage, sourceType: .camera, onImageSaved: { savedImageName in
+                imageName = savedImageName
+                writeTramsaction(type: .costs)
+                isPresented = false
+            })
+        }
         #endif
     }
     
@@ -315,10 +323,17 @@ struct AddNewItemView: View {
     
     func writeTramsaction(type: TransactionType) {
         print("X. Starting writeTransaction")
-        guard let amountDouble = Double(amount) else { 
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "uk_UA")
+        formatter.numberStyle = .decimal
+        
+        print("Amount to convert: \(amount)")
+        guard let number = formatter.number(from: amount) else {
             print("Y. Failed to convert amount to Double")
-            return 
+            return
         }
+        let amountDouble = number.doubleValue
+        print("Successfully converted to Double: \(amountDouble)")
         
         var transaction: Transaction?
         
