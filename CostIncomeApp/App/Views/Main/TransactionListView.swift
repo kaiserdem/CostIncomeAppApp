@@ -113,7 +113,6 @@ struct TransactionListView: View {
                                 .padding(.trailing, 16)
                             }
                         }
-                        // Свайп тільки для назви і суми
                         TabView(selection: $viewModel.selectedTypeIndex) {
                             ForEach(0..<viewModel.types.count, id: \ .self) { idx in
                                 VStack(spacing: 12) {
@@ -121,7 +120,7 @@ struct TransactionListView: View {
                                         .font(.custom("Rubik-Regular", size: 23))
                                         .foregroundColor(.white)
                                     Text(viewModel.balanceString(for: viewModel.types[idx]))
-                                        .font(.custom("Rubik-Regular", size: 32))
+                                        .font(.custom("Rubik-Regular", size: 42))
                                         .foregroundColor(.white)
                                 }
                                 .tag(idx)
@@ -145,17 +144,15 @@ struct TransactionListView: View {
                                 .aspectRatio(contentMode: .fit)
                                 .frame(maxWidth: .infinity, minHeight: 48, maxHeight: 48)
                                 .padding(.horizontal)
+                                .padding(.bottom, -10)
                         }
                         
-                        // Статичний список з перевіркою на пустоту
                         VStack(spacing: 0) {
                             if viewModel.filteredTransactions().isEmpty {
                                 Color.white
                                     .opacity(0.05)
                                     .frame(height: 400)
-//                                Color.white
-//                                    .frame(maxWidth: .infinity, minHeight: 400, maxHeight: .infinity)
-//                                    .background(Color.white.opacity(0.1))
+                                
                             } else {
                                 ScrollView {
                                     VStack(spacing: 8) {

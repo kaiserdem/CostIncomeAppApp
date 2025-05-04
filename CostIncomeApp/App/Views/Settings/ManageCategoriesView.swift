@@ -33,7 +33,7 @@ struct ManageCategoriesView: View {
                     
                     Spacer()
                     Text("Manage Categories")
-                        .font(.custom("Rubik-Regular", size: 24))
+                        .font(.custom("Rubik-Regular", size: 20))
                         .foregroundColor(.black)
                     
                     Spacer()

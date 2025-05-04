@@ -148,6 +148,7 @@ struct AddNewItemView: View {
                             .padding(.horizontal, 30)
                             .keyboardType(.decimalPad)
                             .focused($isAmountFocused)
+                            .padding(.top, 20)
                         
                         TextField("Enter name", text: $name)
                             .padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
@@ -177,43 +178,49 @@ struct AddNewItemView: View {
                             .font(.custom("Rubik-Regular", size: 20))
                             .padding(.horizontal, 30)
                             .foregroundColor(.gray)
+                            .frame(height: 80)
                         
                         let screenWidth = UIScreen.main.bounds.width
                         let minItemWidth: CGFloat = 120
                         let spacing: CGFloat = 8
-                        let countInRow = 2
+                        let countInRow = 3
                         let rows = chunked(viewModel.categories, size: countInRow)
                         
-                        VStack(alignment: .leading, spacing: spacing) {
-                            ForEach(rows, id: \.self) { row in
-                                HStack(spacing: spacing) {
-                                    ForEach(row, id: \.self) { category in
-                                        Button(action: {
-                                            selectedCategory = category
-                                            categoryTapped()
-                                        }) {
-                                            HStack(spacing: 4) {
-                                                Text(category)
-                                                    .font(.custom("Rubik-Regular", size: 16))
-                                                    .foregroundColor(Color(hex: "D44891"))
-                                                    .lineLimit(1)
-                                                    .truncationMode(.tail)
+                        ScrollView {
+                            VStack(alignment: .leading, spacing: spacing) {
+                                ForEach(rows, id: \.self) { row in
+                                    HStack(spacing: spacing) {
+                                        ForEach(row, id: \.self) { category in
+                                            Button(action: {
+                                                selectedCategory = category
+                                                categoryTapped()
+                                            }) {
+                                                HStack(spacing: 4) {
+                                                    Text(category)
+                                                        .font(.custom("Rubik-Regular", size: 16))
+                                                        .foregroundColor(Color(hex: "D44891"))
+                                                        .lineLimit(1)
+                                                        .truncationMode(.tail)
+                                                }
+                                                .padding(.horizontal, 16)
+                                                .frame(height: 48)
+                                                .background(Color.white.opacity(0.7))
+                                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 12)
+                                                        .stroke(Color(hex: "D44891"), lineWidth: 1)
+                                                )
                                             }
-                                            .padding(.horizontal, 16)
-                                            .frame(height: 48)
-                                            .background(Color.white.opacity(0.7))
-                                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 12)
-                                                    .stroke(Color(hex: "D44891"), lineWidth: 1)
-                                            )
                                         }
                                     }
+                                    .padding(.horizontal)
                                 }
-                                .padding(.horizontal)
                             }
                         }
+                        .frame(height: 200)
                         .padding(.bottom, imageName == nil ? 0 : 70)
+                        .scrollIndicators(.hidden)
+
                         
                         if imageName == nil {
                             Button(action: {

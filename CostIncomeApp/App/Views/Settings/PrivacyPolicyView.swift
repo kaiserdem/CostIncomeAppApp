@@ -96,7 +96,7 @@ struct PrivacyPolicyView: View {
                 ScrollView {
                     Text(privacyText)
                         .padding()
-                        .foregroundColor(.black)
+                        .foregroundColor(.black.opacity(0.8))
                         .font(.custom("Rubik-Regular", size: 20))
                         .lineLimit(nil)
                 }

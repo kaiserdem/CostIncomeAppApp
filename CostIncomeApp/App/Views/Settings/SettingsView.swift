@@ -96,9 +96,9 @@ struct SettingsView: View {
 
                                 Spacer()
                                 
-                                Text(currencyService.selectedCurrency.symbol)
-                                    .foregroundColor(.black)
-                                    .font(.custom("Rubik-Regular", size: 20))
+                                Text(currencyService.selectedCurrency.rawValue)
+                                    .foregroundColor(.gray)
+                                    .font(.custom("Rubik-Regular", size: 15))
 
                                     .padding(.leading, 5)
                                 

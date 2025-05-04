@@ -34,7 +34,7 @@ struct EditCategoryPopup: View {
                     }
                     
                     Text("Enter a new category\n name")
-                        .font(.custom("Rubik-Regular", size: 24))
+                        .font(.custom("Rubik-Regular", size: 20))
                         .multilineTextAlignment(.center)
                         .padding(.top, -40)
                     

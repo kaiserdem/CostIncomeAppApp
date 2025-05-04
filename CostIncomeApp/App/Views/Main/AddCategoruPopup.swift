@@ -23,7 +23,7 @@ struct AddCategoryPopup: View {
                 }
 
                 Text("What do you want to\nname the category?")
-                    .font(.custom("Rubik-Regular", size: 16))
+                    .font(.custom("Rubik-Regular", size: 20))
                     .multilineTextAlignment(.center)
                     .padding(.top, -40)
 
