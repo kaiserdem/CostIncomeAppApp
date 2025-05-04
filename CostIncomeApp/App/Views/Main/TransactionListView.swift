@@ -151,8 +151,11 @@ struct TransactionListView: View {
                         VStack(spacing: 0) {
                             if viewModel.filteredTransactions().isEmpty {
                                 Color.white
-                                    .frame(maxWidth: .infinity, minHeight: 400, maxHeight: .infinity)
-                                    .background(Color.white.opacity(0.8))
+                                    .opacity(0.05)
+                                    .frame(height: 400)
+//                                Color.white
+//                                    .frame(maxWidth: .infinity, minHeight: 400, maxHeight: .infinity)
+//                                    .background(Color.white.opacity(0.1))
                             } else {
                                 ScrollView {
                                     VStack(spacing: 8) {

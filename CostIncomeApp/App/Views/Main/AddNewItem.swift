@@ -265,7 +265,7 @@ struct AddNewItemView: View {
         }
         #if canImport(UIKit)
         .sheet(isPresented: $showingImagePicker) {
-            ImagePicker(image: $inputImage, onImageSaved: { savedImageName in
+            ImagePicker(image: $inputImage, sourceType: .photoLibrary, onImageSaved: { savedImageName in
                 imageName = savedImageName
                 writeTramsaction(type: .costs)
                 isPresented = false

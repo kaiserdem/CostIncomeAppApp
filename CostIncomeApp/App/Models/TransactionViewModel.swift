@@ -11,7 +11,7 @@ class TransactionViewModel: ObservableObject {
     @Published var categories: [String] = []
     
     let types: [TransactionType] = [.costs, .income]
-    let defaultCategories = ["Home and Life", "Food", "Health", "Entertainment", "Transportation costs", "Other"]
+    let defaultCategories = ["Home and Life", "Food", "Entertainment",  "Health", "Other"]
     
     var categorySums: [String: Double] {
         var dict: [String: Double] = [:]
