@@ -183,7 +183,9 @@ struct AddNewItemView: View {
                         let screenWidth = UIScreen.main.bounds.width
                         let minItemWidth: CGFloat = 120
                         let spacing: CGFloat = 8
-                        let countInRow = 3
+                        let horizontalPadding: CGFloat = 30
+                        let availableWidth = screenWidth - (horizontalPadding * 2) - (spacing * 2)
+                        let countInRow = Int(availableWidth / minItemWidth)
                         let rows = chunked(viewModel.categories, size: countInRow)
                         
                         ScrollView {
@@ -204,6 +206,7 @@ struct AddNewItemView: View {
                                                 }
                                                 .padding(.horizontal, 16)
                                                 .frame(height: 48)
+                                                .frame(maxWidth: .infinity)
                                                 .background(Color.white.opacity(0.7))
                                                 .clipShape(RoundedRectangle(cornerRadius: 12))
                                                 .overlay(
@@ -217,6 +220,7 @@ struct AddNewItemView: View {
                                 }
                             }
                         }
+                        .listRowInsets(.init(top: 10, leading: 0, bottom: 10, trailing: 0))
                         .frame(height: 200)
                         .padding(.bottom, imageName == nil ? 0 : 70)
                         .scrollIndicators(.hidden)
