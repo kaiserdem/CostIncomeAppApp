@@ -45,7 +45,7 @@ struct SettingsView: View {
                     
                     Spacer()
                     Text("Settings")
-                        .font(.custom("Rubik-VariableFont_wght", size: 24))
+                        .font(.custom("Rubik-Regular", size: 24))
                         .foregroundColor(.black)
                     
                     Spacer()
@@ -171,7 +171,7 @@ struct CurrencyPickerSheet: View {
             HStack {
                 Spacer()
                 Text("Currency")
-                    .font(.headline)
+                    .font(.custom("Rubik-Regular", size: 16))
                     .frame(maxWidth: .infinity)
                     .offset(x: 25)
                 

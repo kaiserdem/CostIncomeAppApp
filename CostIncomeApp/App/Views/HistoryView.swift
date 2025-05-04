@@ -33,7 +33,7 @@ struct HistoryView: View {
                     
                     Spacer()
                     Text("History")
-                        .font(.custom("Rubik-VariableFont_wght", size: 24))
+                        .font(.custom("Rubik-Regular", size: 24))
                         .foregroundColor(.black)
                     
                     Spacer()
@@ -69,7 +69,7 @@ struct HistoryView: View {
                                 
                                 VStack(alignment: .leading) {
                                     Text(transaction.name)
-                                        .font(.headline)
+                                        .font(.custom("Rubik-Regular", size: 16))
                                     if let category = transaction.category {
                                         Text(category)
                                             .font(.subheadline)
@@ -83,7 +83,7 @@ struct HistoryView: View {
                                     Text(currencyService.formatAmount(transaction.amount))
                                         .foregroundColor(.black)
                                     Text(transaction.date, style: .date)
-                                        .font(.caption)
+                                        .font(.custom("Rubik-Regular", size: 16))
                                         .foregroundColor(.gray)
                                 }
                             }

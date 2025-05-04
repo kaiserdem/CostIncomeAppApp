@@ -118,10 +118,10 @@ struct TransactionListView: View {
                             ForEach(0..<viewModel.types.count, id: \ .self) { idx in
                                 VStack(spacing: 12) {
                                     Text(viewModel.types[idx] == .costs ? "Costs" : "Income")
-                                        .font(.title2)
+                                        .font(.custom("Rubik-Regular", size: 23))
                                         .foregroundColor(.white)
                                     Text(viewModel.balanceString(for: viewModel.types[idx]))
-                                        .font(.system(size: 48, weight: .bold, design: .rounded))
+                                        .font(.custom("Rubik-Regular", size: 32))
                                         .foregroundColor(.white)
                                 }
                                 .tag(idx)
@@ -176,10 +176,10 @@ struct TransactionListView: View {
                                                 
                                                 VStack(alignment: .leading) {
                                                     Text(transaction.name)
-                                                        .font(.headline)
+                                                        .font(.custom("Rubik-Regular", size: 16))
                                                     if let category = transaction.category {
                                                         Text(category)
-                                                            .font(.subheadline)
+                                                            .font(.custom("Rubik-Regular", size: 16))
                                                             .foregroundColor(.gray)
                                                     }
                                                 }
@@ -190,22 +190,20 @@ struct TransactionListView: View {
                                                     Text(currencyService.formatAmount(transaction.amount))
                                                         .foregroundColor(.black)
                                                     Text(transaction.date, style: .date)
-                                                        .font(.caption)
+                                                        .font(.custom("Rubik-Regular", size: 16))
                                                         .foregroundColor(.gray)
                                                 }
                                             }
                                             .padding(.vertical, 8)
-                                            //.background(Color.white.opacity(0.5))
                                             .cornerRadius(10)
                                             .padding(.horizontal)
                                         }
                                         Color.white
-                                            .opacity(0.1)
-                                            .frame(height: 100)
+                                            .opacity(0.05)
+                                            .frame(height: 300)
                                     }
                                     .padding(.vertical, 8)
                                 }
-                                //.background(Color.white)
                             }
                         }
                         .background(Color.white.opacity(0.8))
@@ -387,12 +385,12 @@ struct CategoriesWrapView: View {
                         } else {
                             HStack(spacing: 4) {
                                 Text("\(item):")
-                                    .font(.footnote)
+                                    .font(.custom("Rubik-Regular", size: 16))
                                     .foregroundColor(.gray)
                                     .lineLimit(1)
                                     .truncationMode(.tail)
                                 Text("$\(String(format: "%.2f", sums[item] ?? 0))")
-                                    .font(.footnote)
+                                    .font(.custom("Rubik-Regular", size: 16))
                                     .fontWeight(.bold)
                                     .foregroundColor(.black)
                                     .lineLimit(1)

@@ -23,7 +23,7 @@ struct AddCategoryPopup: View {
                 }
 
                 Text("What do you want to\nname the category?")
-                    .font(.headline)
+                    .font(.custom("Rubik-Regular", size: 16))
                     .multilineTextAlignment(.center)
                     .padding(.top, -40)
 
@@ -44,7 +44,7 @@ struct AddCategoryPopup: View {
                     }
                 }) {
                     Text("Create")
-                        .font(.headline)
+                        .font(.custom("Rubik-Regular", size: 16))
                         .foregroundColor(.purple)
                         .frame(maxWidth: .infinity)
                         .padding()

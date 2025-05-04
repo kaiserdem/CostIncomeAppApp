@@ -27,10 +27,10 @@ struct TransactionRow: View {
             
             VStack(alignment: .leading) {
                 Text(transaction.name)
-                    .font(.headline)
+                    .font(.custom("Rubik-Regular", size: 16))
                 if let category = transaction.category {
                     Text(category)
-                        .font(.subheadline)
+                        .font(.custom("Rubik-Regular", size: 16))
                         .foregroundColor(.gray)
                 }
             }
@@ -41,7 +41,7 @@ struct TransactionRow: View {
                 Text(currencyService.formatAmount(transaction.amount))
                     .foregroundColor(.black)
                 Text(transaction.date, style: .date)
-                    .font(.caption)
+                    .font(.custom("Rubik-Regular", size: 16))
                     .foregroundColor(.gray)
             }
         }

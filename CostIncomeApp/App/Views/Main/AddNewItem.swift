@@ -103,7 +103,7 @@ struct AddNewItemView: View {
                         Spacer()
                         
                         Text(state.title)
-                            .font(.title2)
+                            .font(.custom("Rubik-Regular", size: 16))
                             .fontWeight(.bold)
                         
                         Spacer()
@@ -112,7 +112,7 @@ struct AddNewItemView: View {
                             isPresented = false
                         }) {
                             Image(systemName: "xmark")
-                                .font(.title2)
+                                .font(.custom("Rubik-Regular", size: 16))
                                 .foregroundColor(.gray)
                         }
                     }
