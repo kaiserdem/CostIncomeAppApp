@@ -203,15 +203,11 @@ struct TransactionListView: View {
                 }
                 
                 if showingAddNewItem {
-                    
                     if capturedImageName != nil {
                         AddNewItemView(isPresented: $showingAddNewItem, imageName: capturedImageName)
-
                     } else {
                         AddNewItemView(isPresented: $showingAddNewItem)
-
                     }
-                    
                 }
             }
             .onAppear {
@@ -317,6 +313,12 @@ struct TransactionRow: View {
                         .frame(width: 50, height: 50)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
+            } else {
+                Image(transaction.type == .income ? "income" : "cost")
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 50, height: 50)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
             }
             
             VStack(alignment: .leading) {

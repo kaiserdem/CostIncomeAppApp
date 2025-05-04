@@ -1,6 +1,7 @@
 import SwiftUI
-
-
+#if canImport(UIKit)
+import UIKit
+#endif
 
 enum AddItemState: String, CaseIterable {
     case fields = "fields"
@@ -41,9 +42,12 @@ struct AddNewItemView: View {
     @EnvironmentObject var viewModel: TransactionViewModel
     @FocusState private var isAmountFocused: Bool
     
-    
     let withPhotos = UserDefaults.standard.object(forKey: "AlwaysAddPhotos") as? Bool
     
+    init(isPresented: Binding<Bool>, imageName: String? = nil) {
+        self._isPresented = isPresented
+        self.imageName = imageName
+    }
     
     var body: some View {
         ZStack {
@@ -65,7 +69,7 @@ struct AddNewItemView: View {
                         
                         Button(action: {
                             isPresented = false
-                            
+                            imageName = nil
                         }) {
                             Image(systemName: "xmark")
                                 .font(.title2)
@@ -117,7 +121,7 @@ struct AddNewItemView: View {
                                 ForEach(viewModel.categories, id: \.self) { category in
                                     Button(action: {
                                         selectedCategory = category
-                                        state = .camera
+                                        categoryTapped()
                                         
                                     }) {
                                         Text(category)
@@ -134,10 +138,7 @@ struct AddNewItemView: View {
                         
                         if imageName == nil {
                             Button(action: {
-                                state = .camera
-                                // remove image
-                                // write item
-                                
+                                writeTramsaction(type: .costs)
                             }) {
                                 Text("Income")
                                     .foregroundColor(.white)
@@ -150,7 +151,9 @@ struct AddNewItemView: View {
                                     .shadow(color: Color(hex: "14062C3D"), radius: 8, x: 0, y: 8)
                             }
                         }
+                        
                         case .camera:
+                        
                         VStack {
                             Button(action: {
                                 
@@ -171,7 +174,7 @@ struct AddNewItemView: View {
                             .padding(.top, 12)
                             
                             Button(action: {
-                                
+                                writeTramsaction(type: .costs)
                             }) {
                                 Image("dqwdqwedqwed3")
                                     .resizable()
@@ -200,8 +203,46 @@ struct AddNewItemView: View {
         }
     }
     
+    func categoryTapped() {
+        if let withPhotos = withPhotos {
+            if withPhotos {
+                if imageName == nil {
+                    state = .camera
+                } else {
+                    writeTramsaction(type: .costs)
+                }
+            } else {
+                writeTramsaction(type: .costs)
+            }
+        } else {
+            writeTramsaction(type: .costs)
+        }
+    }
     
-    func writeTramsaction() {
-       
+    
+    func writeTramsaction(type: TransactionType) {
+        guard let amountDouble = Double(amount) else { return }
+        
+        var transaction: Transaction?
+        
+        if type == .income {
+            transaction = Transaction(
+                amount: amountDouble,
+                type: .income,
+                name: name.isEmpty ? "Transaction" : name,
+                date: Date())
+        } else {
+            transaction = Transaction(
+               amount: amountDouble,
+               type: .costs,
+               name: name.isEmpty ? "Transaction" : name,
+               category: selectedCategory.isEmpty ? nil : selectedCategory,
+               date: Date(),
+               imageName: imageName)
+        }
+        
+        viewModel.transactionManager.addTransaction(transaction!)
+        imageName = nil
+        isPresented = false
     }
 }
