@@ -356,6 +356,7 @@ struct CustomIndicator: View {
 
 struct CategoriesWrapView: View {
     @EnvironmentObject var viewModel: TransactionViewModel
+    @StateObject private var currencyService = CurrencyService.shared
     let sums: [String: Double]
     @Binding var showAddCategoryPopup: Bool
     var addCategory: () -> Void
@@ -389,7 +390,7 @@ struct CategoriesWrapView: View {
                                     .foregroundColor(.gray)
                                     .lineLimit(1)
                                     .truncationMode(.tail)
-                                Text("$\(String(format: "%.2f", sums[item] ?? 0))")
+                                Text(currencyService.formatAmount(sums[item] ?? 0))
                                     .font(.custom("Rubik-Regular", size: 16))
                                     .fontWeight(.bold)
                                     .foregroundColor(.black)

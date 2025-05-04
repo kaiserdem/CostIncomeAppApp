@@ -83,7 +83,7 @@ struct AddNewItemView: View {
     @EnvironmentObject var viewModel: TransactionViewModel
     @FocusState private var isAmountFocused: Bool
     
-    let withPhotos = UserDefaults.standard.object(forKey: "AlwaysAddPhotos") as? Bool
+    let withPhotos = UserDefaults.standard.object(forKey: "AlwaysAddPhotos") as? Bool ?? true
     
     init(isPresented: Binding<Bool>, imageName: String? = nil) {
         self._isPresented = isPresented
@@ -255,7 +255,7 @@ struct AddNewItemView: View {
     }
     
     func categoryTapped() {
-        if let withPhotos = withPhotos {
+       // if let withPhotos = withPhotos {
             
             if withPhotos {
                 if imageName == nil {
@@ -266,9 +266,9 @@ struct AddNewItemView: View {
             } else {
                 writeTramsaction(type: .costs)
             }
-        } else {
-            writeTramsaction(type: .costs)
-        }
+//        } else {
+//            writeTramsaction(type: .costs)
+//        }
     }
     
     
