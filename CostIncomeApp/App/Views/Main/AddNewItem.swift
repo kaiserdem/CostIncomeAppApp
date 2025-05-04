@@ -32,6 +32,47 @@ enum AddItemState: String, CaseIterable {
 
 }
 
+#if canImport(UIKit)
+class ImagePickerCoordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    let parent: AddNewItemView
+    
+    init(_ parent: AddNewItemView) {
+        self.parent = parent
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let image = info[.originalImage] as? UIImage {
+            let imageName = saveImage(image)
+            parent.writeTramsaction(type: .costs)
+            parent.isPresented = false
+        }
+        picker.dismiss(animated: true)
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true)
+    }
+    
+    private func saveImage(_ image: UIImage) -> String {
+        guard let data = image.jpegData(compressionQuality: 0.8) else { return "" }
+        let imageName = "\(UUID().uuidString).jpg"
+        let filename = getDocumentsDirectory().appendingPathComponent(imageName)
+        try? data.write(to: filename)
+        return imageName
+    }
+    
+    private func getDocumentsDirectory() -> URL {
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    }
+}
+
+extension AddNewItemView {
+    var coordinator: ImagePickerCoordinator {
+        ImagePickerCoordinator(self)
+    }
+}
+#endif
+
 struct AddNewItemView: View {
     @Binding var isPresented: Bool
     var imageName: String?
@@ -69,7 +110,6 @@ struct AddNewItemView: View {
                         
                         Button(action: {
                             isPresented = false
-                            imageName = nil
                         }) {
                             Image(systemName: "xmark")
                                 .font(.title2)
@@ -138,7 +178,7 @@ struct AddNewItemView: View {
                         
                         if imageName == nil {
                             Button(action: {
-                                writeTramsaction(type: .costs)
+                                writeTramsaction(type: .income)
                             }) {
                                 Text("Income")
                                     .foregroundColor(.white)
@@ -156,7 +196,12 @@ struct AddNewItemView: View {
                         
                         VStack {
                             Button(action: {
-                                
+                                #if canImport(UIKit)
+                                let imagePicker = UIImagePickerController()
+                                imagePicker.sourceType = .photoLibrary
+                                imagePicker.delegate = coordinator
+                                UIApplication.shared.windows.first?.rootViewController?.present(imagePicker, animated: true)
+                                #endif
                             }) {
                                 Image("dqwdqwedqwed1")
                                     .resizable()
@@ -165,7 +210,12 @@ struct AddNewItemView: View {
                             .padding(.top, 12)
                             
                             Button(action: {
-                                
+                                #if canImport(UIKit)
+                                let imagePicker = UIImagePickerController()
+                                imagePicker.sourceType = .camera
+                                imagePicker.delegate = coordinator
+                                UIApplication.shared.windows.first?.rootViewController?.present(imagePicker, animated: true)
+                                #endif
                             }) {
                                 Image("dqwdqwedqwed2")
                                     .resizable()
@@ -199,12 +249,14 @@ struct AddNewItemView: View {
         }
         .onAppear {
             isAmountFocused = true
-            print(imageName)
+            print("imageName:\(String(describing: imageName))")
+            print("withPhotos \(String(describing: withPhotos))")
         }
     }
     
     func categoryTapped() {
         if let withPhotos = withPhotos {
+            
             if withPhotos {
                 if imageName == nil {
                     state = .camera
@@ -242,7 +294,6 @@ struct AddNewItemView: View {
         }
         
         viewModel.transactionManager.addTransaction(transaction!)
-        imageName = nil
         isPresented = false
     }
 }

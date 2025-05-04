@@ -95,7 +95,7 @@ struct TransactionListView: View {
                     .edgesIgnoringSafeArea(.all)
                 
                 ScrollView {
-                    VStack(spacing: 24) {
+                    VStack(spacing: 10) {
                         // Кнопка завжди зверху
                         HStack {
                             Spacer()
@@ -138,7 +138,7 @@ struct TransactionListView: View {
                         })
                         .padding(.top, 8)
                         
-                        Button(action: { /* логіка для show all */ }) {
+                        NavigationLink(destination: HistoryView()) {
                             Image("showalllllll")
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
@@ -151,22 +151,27 @@ struct TransactionListView: View {
                             if viewModel.filteredTransactions().isEmpty {
                                 Color.white
                                     .frame(maxWidth: .infinity, minHeight: 400, maxHeight: .infinity)
-                                    .background(Color.white.opacity(0.8))
-                                    .background(Color.white.opacity(0.7))
-                                
+                                    .background(Color.white)
                             } else {
-                                ForEach(viewModel.filteredTransactions()) { transaction in
-                                    TransactionRow(transaction: transaction)
-                                        .padding(.horizontal)
-                                        .padding(.vertical, 4)
+                                ScrollView {
+                                    VStack(spacing: 8) {
+                                        ForEach(viewModel.filteredTransactions()) { transaction in
+                                            TransactionRow(transaction: transaction)
+                                                .padding(.horizontal)
+                                        }
+                                        Color(.white)
+                                            .frame(height: 100)
+                                    }
+                                    .padding(.vertical, 8)
                                 }
+                                .background(Color.white)
                             }
                         }
                         .background(Color.white)
                         .cornerRadius(20, corners: [.topLeft, .topRight])
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .edgesIgnoringSafeArea(.all)
-                        .padding(.bottom, -46)
+                        .edgesIgnoringSafeArea(.bottom)
+                        .padding(.bottom , -40)
                         
                         Spacer()
                     }
@@ -205,6 +210,9 @@ struct TransactionListView: View {
                 if showingAddNewItem {
                     if capturedImageName != nil {
                         AddNewItemView(isPresented: $showingAddNewItem, imageName: capturedImageName)
+                            .onDisappear {
+                                capturedImageName = nil
+                            }
                     } else {
                         AddNewItemView(isPresented: $showingAddNewItem)
                     }
@@ -335,14 +343,14 @@ struct TransactionRow: View {
             
             VStack(alignment: .trailing) {
                 Text(String(format: "%.2f ₴", transaction.amount))
-                    .foregroundColor(transaction.type == .income ? .green : .red)
+                    .foregroundColor(transaction.type == .income ? .black : .black)
                 Text(transaction.date, style: .date)
                     .font(.caption)
                     .foregroundColor(.gray)
             }
         }
         .padding(.vertical, 8)
-        .background(Color.white.opacity(0.8))
+        //.background(Color.white.opacity(0.8))
         .cornerRadius(10)
     }
     
