@@ -189,6 +189,8 @@ struct TransactionListView: View {
                                                 VStack(alignment: .trailing) {
                                                     Text(currencyService.formatAmount(transaction.amount))
                                                         .foregroundColor(.black)
+                                                        .font(.custom("Rubik-Regular", size: 16))
+
                                                     Text(formatDate(transaction.date))
                                                         .font(.custom("Rubik-Regular", size: 12))
                                                         .foregroundColor(.gray)

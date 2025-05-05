@@ -19,6 +19,6 @@ class CurrencyService: ObservableObject {
     }
     
     func formatAmount(_ amount: Double) -> String {
-        return String(format: "%.2f \(selectedCurrency.symbol)", amount)
+        return "\(selectedCurrency.symbol) \(String(format: "%.2f", amount))"
     }
 } 
