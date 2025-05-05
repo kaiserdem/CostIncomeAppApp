@@ -19,6 +19,9 @@ class CurrencyService: ObservableObject {
     }
     
     func formatAmount(_ amount: Double) -> String {
-        return "\(selectedCurrency.symbol) \(String(format: "%.2f", amount))"
+        let formattedAmount = amount.truncatingRemainder(dividingBy: 1) == 0 ? 
+            String(format: "%.0f", amount) : 
+            String(format: "%.2f", amount)
+        return "\(selectedCurrency.symbol) \(formattedAmount)"
     }
 } 
