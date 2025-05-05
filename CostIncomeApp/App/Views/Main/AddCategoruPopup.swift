@@ -35,6 +35,7 @@ struct AddCategoryPopup: View {
                     .padding(.horizontal, 30)
                     .autocapitalization(.none)
                     .disableAutocorrection(true)
+                    .autocapitalization(.words)
 
                 Button(action: {
                     if !newCategoryName.isEmpty {

@@ -39,7 +39,9 @@ class TransactionViewModel: ObservableObject {
     }
     
     func filteredTransactions() -> [Transaction] {
-        transactionManager.transactions.filter { $0.type == types[selectedTypeIndex] }
+        transactionManager.transactions
+            .filter { $0.type == types[selectedTypeIndex] }
+            .sorted { $0.date > $1.date }
     }
     
     func balanceString(for type: TransactionType) -> String {
