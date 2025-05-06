@@ -10,6 +10,8 @@ struct SettingsView: View {
     @State private var isToggled = true
     @State private var showCurrencyPicker = false
     @State private var showCurrencySheet = false
+    @State private var showCurrencyView = false
+
     @State private var showManageCategoriesView = false
     @State private var privacyPolicyView = false
 
@@ -23,111 +25,93 @@ struct SettingsView: View {
     
     var body: some View {
         ZStack {
-            Image("bfwefewwg")
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .edgesIgnoringSafeArea(.all)
-            Rectangle()
-                        .fill(Color.white.opacity(0.5))
-                        .edgesIgnoringSafeArea(.all)
-            
-            
-            VStack {
-                HStack {
-                    Button(action: {
-                        dismiss()
-                    }) {
-                        Image("CaretLeft")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 25, height: 25)
-                    }
-                    
-                    Spacer()
-                    Text("Settings")
-                        .font(.custom("Rubik-Regular", size: 20))
-                        .foregroundColor(.black)
-                        .offset(x: -15)
-
-                    
-                    Spacer()
-                    
-                }
-                .padding(.horizontal)
-                .padding(.top, 60)
-                
+            // Основний контент
+            ZStack {
+                Image("bfwefewwg")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .edgesIgnoringSafeArea(.all)
                 Rectangle()
-                    .fill(Color.gray)
-                    .frame(height: 1)
-                    .edgesIgnoringSafeArea(.horizontal)
+                    .fill(Color.white.opacity(0.5))
+                    .edgesIgnoringSafeArea(.all)
                 
-                ScrollView {
-                    VStack(spacing: 16) {
-                        // Перша кнопка
-                        HStack {
-                            Text("Always add photos")
-                                .foregroundColor(.black)
-                                .font(.custom("Rubik-Regular", size: 16))
-                                .lineLimit(nil)
-                                .minimumScaleFactor(0.5)
-
-                                .padding(.leading, 20)
-                            Spacer()
-                            Toggle("", isOn: $isToggled)
-                                .toggleStyle(SwitchToggleStyle(tint: Color(hex: "8948FF")))
-                                .padding(.trailing, 20)
-                        }
-                        .frame(height: 50)
-                        .background(Color.white)
-                        .cornerRadius(10)
-                        .onChange(of: isToggled) { newValue in
-                            UserDefaults.standard.set(newValue, forKey: "AlwaysAddPhotos")
+                VStack {
+                    HStack {
+                        Button(action: {
+                            dismiss()
+                        }) {
+                            Image("CaretLeft")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 25, height: 25)
                         }
                         
-                        // Друга кнопка
-                        Button(action: {
-                            showCurrencySheet = true
-                        }) {
+                        Spacer()
+                        Text("Settings")
+                            .font(.custom("Rubik-Regular", size: 20))
+                            .foregroundColor(.black)
+                            .offset(x: -15)
+                        
+                        Spacer()
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 60)
+                    
+                    Rectangle()
+                        .fill(Color.gray)
+                        .frame(height: 1)
+                        .edgesIgnoringSafeArea(.horizontal)
+                    
+                    ScrollView {
+                        VStack(spacing: 16) {
+                            // Перша кнопка
                             HStack {
-                                Text("Currency")
+                                Text("Always add photos")
                                     .foregroundColor(.black)
-                                    .padding(.leading, 20)
                                     .font(.custom("Rubik-Regular", size: 16))
-
+                                    .lineLimit(nil)
+                                    .minimumScaleFactor(0.5)
+                                    .padding(.leading, 20)
                                 Spacer()
-                                
-                                Text(currencyService.selectedCurrency.rawValue)
-                                    .foregroundColor(.gray)
-                                    .font(.custom("Rubik-Regular", size: 15))
-
-                                    .padding(.leading, 5)
-                                
-                                Image("23432CaretLeft")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 20, height: 20)
-                                    .foregroundColor(.black)
+                                Toggle("", isOn: $isToggled)
+                                    .toggleStyle(SwitchToggleStyle(tint: Color(hex: "8948FF")))
                                     .padding(.trailing, 20)
                             }
                             .frame(height: 50)
                             .background(Color.white)
                             .cornerRadius(10)
-                        }
-                        
-                        // Третя кнопка
-                        NavigationLink(destination: ManageCategoriesView(), isActive: $showManageCategoriesView) {
+                            .onChange(of: isToggled) { newValue in
+                                UserDefaults.standard.set(newValue, forKey: "AlwaysAddPhotos")
+                            }
+                            
+                            // Друга кнопка
                             Button(action: {
-                                showManageCategoriesView = true
+                                withAnimation {
+                                    showCurrencySheet.toggle()
+                                    if showCurrencySheet {
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                            withAnimation {
+                                                showCurrencyView = true
+                                            }
+                                        }
+                                    } else {
+                                        showCurrencyView = false
+                                    }
+                                }
                             }) {
                                 HStack {
-                                    Text("Manage Categories")
+                                    Text("Currency")
                                         .foregroundColor(.black)
                                         .padding(.leading, 20)
                                         .font(.custom("Rubik-Regular", size: 16))
 
-                                        .lineLimit(nil)
-                                        .minimumScaleFactor(0.5)
                                     Spacer()
+                                    
+                                    Text(currencyService.selectedCurrency.rawValue)
+                                        .foregroundColor(.gray)
+                                        .font(.custom("Rubik-Regular", size: 15))
+                                        .padding(.leading, 5)
+                                    
                                     Image("23432CaretLeft")
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
@@ -139,45 +123,80 @@ struct SettingsView: View {
                                 .background(Color.white)
                                 .cornerRadius(10)
                             }
-                        }
-                        
-                        // Четверта кнопка
-                       
-                        NavigationLink(destination: PrivacyPolicyView(), isActive: $privacyPolicyView) {
-                            Button(action: {
-                                privacyPolicyView = true
-                            }) {
-                                HStack {
-                                    Text("Privacy Policy")
-                                        .foregroundColor(.black)
-                                        .font(.custom("Rubik-Regular", size: 16))
-
-                                        .padding(.leading, 20)
-                                    Spacer()
-                                    Image("23432CaretLeft")
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 20, height: 20)
-                                        .foregroundColor(.black)
-                                        .padding(.trailing, 20)
+                            
+                            // Третя кнопка
+                            NavigationLink(destination: ManageCategoriesView(), isActive: $showManageCategoriesView) {
+                                Button(action: {
+                                    showManageCategoriesView = true
+                                }) {
+                                    HStack {
+                                        Text("Manage Categories")
+                                            .foregroundColor(.black)
+                                            .padding(.leading, 20)
+                                            .font(.custom("Rubik-Regular", size: 16))
+                                            .lineLimit(nil)
+                                            .minimumScaleFactor(0.5)
+                                        Spacer()
+                                        Image("23432CaretLeft")
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 20, height: 20)
+                                            .foregroundColor(.black)
+                                            .padding(.trailing, 20)
+                                    }
+                                    .frame(height: 50)
+                                    .background(Color.white)
+                                    .cornerRadius(10)
                                 }
-                                .frame(height: 50)
-                                .background(Color.white)
-
-                                .cornerRadius(10)
+                            }
+                            
+                            // Четверта кнопка
+                            NavigationLink(destination: PrivacyPolicyView(), isActive: $privacyPolicyView) {
+                                Button(action: {
+                                    privacyPolicyView = true
+                                }) {
+                                    HStack {
+                                        Text("Privacy Policy")
+                                            .foregroundColor(.black)
+                                            .font(.custom("Rubik-Regular", size: 16))
+                                            .padding(.leading, 20)
+                                        Spacer()
+                                        Image("23432CaretLeft")
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 20, height: 20)
+                                            .foregroundColor(.black)
+                                            .padding(.trailing, 20)
+                                    }
+                                    .frame(height: 50)
+                                    .background(Color.white)
+                                    .cornerRadius(10)
+                                }
                             }
                         }
+                        .padding()
                     }
-                    .padding()
+                    
+                    Spacer()
                 }
-                
-                Spacer()
+                .navigationBarHidden(true)
+                .navigationBarBackButtonHidden(true)
             }
-            .navigationBarHidden(true)
-            .navigationBarBackButtonHidden(true)
-        }
-        .sheet(isPresented: $showCurrencySheet) {
-            CurrencyPickerSheet(selectedCurrency: $currencyService.selectedCurrency, isPresented: $showCurrencySheet)
+            
+            // Вьюшка валют
+            if showCurrencySheet {
+                VStack {
+                    Spacer()
+                    CurrencyPickerSheet(selectedCurrency: $currencyService.selectedCurrency, isPresented: $showCurrencySheet)
+                        .frame(height: 300)
+                        .background(Color.white)
+                        .cornerRadius(20, corners: [.topLeft, .topRight])
+                        .shadow(radius: 5)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .transition(.move(edge: .bottom))
+                .animation(.easeInOut(duration: 0.1), value: showCurrencySheet)
+            }
         }
     }
 }
@@ -187,51 +206,86 @@ struct CurrencyPickerSheet: View {
     @Binding var isPresented: Bool
     
     var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Spacer()
-                Text("Currency")
-                    .font(.custom("Rubik-Regular", size: 20))
-                    .frame(maxWidth: .infinity)
-                    .offset(x: 25)
-                
-                Button(action: {
-                    isPresented = false
-                }) {
-                    Image(systemName: "xmark")
-                        .foregroundColor(.gray)
-                        .padding()
-                }
-            }
-            .padding(.horizontal)
-            .padding(.top)
+        ZStack {
+            Color.white.opacity(0.95)
+                .ignoresSafeArea()
             
-            Picker("Currency", selection: $selectedCurrency) {
-                ForEach(TransactionCurrency.allCases, id: \.self) { currency in
-                    HStack {
-                        Text(currency.symbol)
-                            .frame(width: 30)
-                            .foregroundStyle(.purple)
-                            .font(.custom("Rubik-Regular", size: 20))
-
-                        Text(currency.rawValue)
-                            .foregroundStyle(.purple)
-                            .font(.custom("Rubik-Regular", size: 20))
-
+            VStack(spacing: 0) {
+                HStack {
+                    Spacer()
+                    Text("Currency")
+                        .font(.custom("Rubik-Regular", size: 20))
+                        .frame(maxWidth: .infinity)
+                        .offset(x: 25)
+                    
+                    Button(action: {
+                        isPresented = false
+                    }) {
+                        Image(systemName: "xmark")
+                            .foregroundColor(.gray)
+                            .padding()
                     }
-                    .tag(currency)
                 }
+                .padding(.horizontal)
+                .padding(.top)
+                
+                Picker("Currency", selection: $selectedCurrency) {
+                    ForEach(TransactionCurrency.allCases, id: \.self) { currency in
+                        HStack {
+                            Text(currency.symbol)
+                                .frame(width: 30)
+                                .foregroundStyle(.purple)
+                                .font(.custom("Rubik-Regular", size: 20))
+
+                            Text(currency.rawValue)
+                                .foregroundStyle(.purple)
+                                .font(.custom("Rubik-Regular", size: 20))
+
+                        }
+                        .tag(currency)
+                    }
+                }
+                .pickerStyle(.wheel)
+                .padding()
+                .onChange(of: selectedCurrency) { newValue in
+                    CurrencyService.shared.updateCurrency(newValue)
+                }
+                .tint(.purple)
             }
-            .pickerStyle(.wheel)
-            .padding()
-            .onChange(of: selectedCurrency) { newValue in
-                CurrencyService.shared.updateCurrency(newValue)
-            }
-            .tint(.purple)
         }
-        .background(Color.red.opacity(0.05))
         .presentationDetents([.fraction(0.33)])
     }
+}
+
+extension View {
+    @ViewBuilder func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
+    }
+
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape(RoundedCorner(radius: radius, corners: corners))
+    }
+}
+
+struct RoundedCorner: Shape {
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
+    }
+}
+
+private var iOS16_4OrLater: Bool {
+    if #available(iOS 16.4, *) {
+        return true
+    }
+    return false
 }
 
 

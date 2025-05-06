@@ -25,13 +25,14 @@ struct AddCategoryPopup: View {
                 Text("What do you want to\nname the category?")
                     .font(.custom("Rubik-Regular", size: 20))
                     .multilineTextAlignment(.center)
-                    .padding(.top, -40)
+                    .padding(.top, -30)
 
                 TextField("Enter a name", text: $newCategoryName)
                     .padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
                     .frame(height: 50)
                     .background(RoundedRectangle(cornerRadius: 15).stroke(Color.gray, lineWidth: 1))
-                    .padding(.bottom, 20)
+                    .padding(.bottom, 10)
+                    .padding(.top, 20)
                     .padding(.horizontal, 30)
                     .autocapitalization(.none)
                     .disableAutocorrection(true)
@@ -53,7 +54,7 @@ struct AddCategoryPopup: View {
                         .background(RoundedRectangle(cornerRadius: 15).stroke(Color.purple, lineWidth: 1))
                 }
                 .padding(.horizontal, 30)
-                .padding(.bottom, 30)
+                .padding(.bottom, 40)
             }
             .frame(width: UIScreen.main.bounds.width - 50)
             .background(Color.white)
