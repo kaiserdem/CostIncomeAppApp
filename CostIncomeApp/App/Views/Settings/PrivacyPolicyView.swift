@@ -3,7 +3,10 @@ import SwiftUI
 
 struct PrivacyPolicyView: View {
     @Environment(\.dismiss) private var dismiss
-
+    var isSE: Bool {
+           return UIScreen.main.bounds.height < 700
+       }
+    
     let privacyText = """
 
     Introduction
@@ -84,7 +87,7 @@ struct PrivacyPolicyView: View {
                     Spacer()
                 }
                 .padding(.horizontal)
-                .padding(.top, 60)
+                .padding(.top, isSE ? 100 : 60)
 
                 // Divider line
                 Rectangle()

@@ -6,6 +6,9 @@ struct EditCategoryPopup: View {
     @Binding var isPresented: Bool
     @Binding var categories: [String]
     let oldCategory: String
+    var isSE: Bool {
+           return UIScreen.main.bounds.height < 700
+       }
     @State private var newCategoryName: String
     
     init(isPresented: Binding<Bool>, categories: Binding<[String]>, oldCategory: String) {

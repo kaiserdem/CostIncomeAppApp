@@ -15,7 +15,7 @@ enum AddItemState: String, CaseIterable {
             case .category:
                 return 0.60
             case .camera:
-                return 0.45
+                return 0.40
             }
         }
     
@@ -103,7 +103,9 @@ struct AddNewItemView: View {
     @State private var showingImagePicker = false
     @State private var showingCameraPicker = false
     @State private var inputImage: UIImage?
-    
+    var isSE: Bool {
+           return UIScreen.main.bounds.height < 700
+       }
     let withPhotos = UserDefaults.standard.object(forKey: "AlwaysAddPhotos") as? Bool ?? true
     
     init(isPresented: Binding<Bool>, imageName: String? = nil) {
@@ -126,6 +128,7 @@ struct AddNewItemView: View {
                         Text(state.title)
                             .font(.custom("Rubik-Regular", size: 22))
                             .fontWeight(.bold)
+                            .offset(y: 15)
                         
                         Spacer()
                         
@@ -138,7 +141,7 @@ struct AddNewItemView: View {
                         }
                     }
                     .padding(.horizontal, 20)
-                    .padding(.top, 20)
+                    .padding(.top, 15)
                     
                     switch state {
                     case .fields:
@@ -240,7 +243,7 @@ struct AddNewItemView: View {
                                     .font(.custom("Rubik-Regular", size: 20))
                                     .cornerRadius(15)
                                     .padding(.horizontal, 28)
-                                    .padding(.bottom, 80)
+                                    .padding(.bottom, isSE ? 130 : 80)
                                     .shadow(color: Color(hex: "14062C3D"), radius: 8, x: 0, y: 8)
                             }
                         }
@@ -275,11 +278,11 @@ struct AddNewItemView: View {
                             }
                             .padding(.top, 12)
                         }
-                        .padding(.bottom, 60)
+                        .padding(.bottom, 70)
                     }
                 }
                 .frame(maxWidth: .infinity)
-                .frame(height: UIScreen.main.bounds.height * (state.heightMultiplier))
+                .frame(height: (UIScreen.main.bounds.height * state.heightMultiplier) + (isSE ? 180 : 0))
                 .background(Color.white)
                 .cornerRadius(20, corners: [.topLeft, .topRight])
                 .padding(.bottom, -40)

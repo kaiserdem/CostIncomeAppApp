@@ -74,6 +74,9 @@ struct TransactionListView: View {
     @State private var capturedImageName: String?
     @State private var showingAddNewItem = false
     let bigSize = UIScreen.main.bounds.size.width > 768
+    var isSE: Bool {
+           return UIScreen.main.bounds.height < 700
+       }
     #if canImport(UIKit)
     @State private var inputImage: UIImage?
     #endif
@@ -112,7 +115,7 @@ struct TransactionListView: View {
                                 }
                             }
                             .padding(.trailing, 16)
-                            .padding(.top, 20)
+                            .padding(.top, isSE ? 70 : 20)
                         }
                         .frame(maxWidth: .infinity)
                         TabView(selection: $viewModel.selectedTypeIndex) {
@@ -243,10 +246,10 @@ struct TransactionListView: View {
                         }) {
                             Image("Buuton-2")
                                 .resizable()
-                                .frame(width: UIScreen.main.bounds.width - 100, height: 85)
+                                .frame(width: UIScreen.main.bounds.width - 100, height: 83)
                         }
                     }
-                    .padding(.bottom, 30)
+                    .padding(.bottom, isSE ? 80 : 30)
                     .padding(.horizontal, 0)
                 }
               

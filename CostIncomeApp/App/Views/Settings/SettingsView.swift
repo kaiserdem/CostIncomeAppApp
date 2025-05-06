@@ -14,7 +14,10 @@ struct SettingsView: View {
 
     @State private var showManageCategoriesView = false
     @State private var privacyPolicyView = false
-
+    var isSE: Bool {
+           return UIScreen.main.bounds.height < 700
+       }
+    
     init() {
         if let savedValue = UserDefaults.standard.object(forKey: "AlwaysAddPhotos") as? Bool {
             _isToggled = State(initialValue: savedValue)
@@ -55,7 +58,7 @@ struct SettingsView: View {
                         Spacer()
                     }
                     .padding(.horizontal)
-                    .padding(.top, 60)
+                    .padding(.top, isSE ? 100 : 60)
                     
                     Rectangle()
                         .fill(Color.gray)
@@ -188,7 +191,7 @@ struct SettingsView: View {
                 VStack {
                     Spacer()
                     CurrencyPickerSheet(selectedCurrency: $currencyService.selectedCurrency, isPresented: $showCurrencySheet)
-                        .frame(height: 300)
+                        .frame(height: 350)
                         .background(Color.white)
                         .cornerRadius(20, corners: [.topLeft, .topRight])
                         .shadow(radius: 5)
@@ -196,6 +199,7 @@ struct SettingsView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .transition(.move(edge: .bottom))
                 .animation(.easeInOut(duration: 0.1), value: showCurrencySheet)
+                .padding(.bottom, -30)
             }
         }
     }
@@ -211,12 +215,14 @@ struct CurrencyPickerSheet: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
+                
                 HStack {
                     Spacer()
                     Text("Currency")
-                        .font(.custom("Rubik-Regular", size: 20))
+                        .font(.custom("Rubik-Regular", size: 22))
                         .frame(maxWidth: .infinity)
                         .offset(x: 25)
+                        .padding(.top, 0)
                     
                     Button(action: {
                         isPresented = false
@@ -227,7 +233,7 @@ struct CurrencyPickerSheet: View {
                     }
                 }
                 .padding(.horizontal)
-                .padding(.top)
+                .padding(.top, 20)
                 
                 Picker("Currency", selection: $selectedCurrency) {
                     ForEach(TransactionCurrency.allCases, id: \.self) { currency in
@@ -246,14 +252,16 @@ struct CurrencyPickerSheet: View {
                     }
                 }
                 .pickerStyle(.wheel)
-                .padding()
+                .padding(.top, -20)
                 .onChange(of: selectedCurrency) { newValue in
                     CurrencyService.shared.updateCurrency(newValue)
                 }
                 .tint(.purple)
+                
+                Spacer()
             }
         }
-        .presentationDetents([.fraction(0.33)])
+        .presentationDetents([.fraction(0.40)])
     }
 }
 

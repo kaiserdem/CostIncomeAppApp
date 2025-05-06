@@ -6,6 +6,9 @@ struct ManageCategoriesView: View {
     @State private var editingCategory: String?
     @State private var showingEditPopup = false
     @State private var newCategoryName = ""
+    var isSE: Bool {
+           return UIScreen.main.bounds.height < 700
+       }
     
     init() {
         _categories = State(initialValue: UserDefaults.standard.stringArray(forKey: "categories") ?? [])
@@ -40,7 +43,7 @@ struct ManageCategoriesView: View {
                     
                 }
                 .padding(.horizontal)
-                .padding(.top, 60)
+                .padding(.top, isSE ? 100 : 60)
                 
                 Rectangle()
                     .fill(Color.gray)

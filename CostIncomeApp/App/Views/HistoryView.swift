@@ -7,6 +7,9 @@ struct HistoryView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var viewModel: TransactionViewModel
     @StateObject private var currencyService = CurrencyService.shared
+    var isSE: Bool {
+           return UIScreen.main.bounds.height < 700
+       }
     
     var body: some View {
         ZStack {
