@@ -98,9 +98,9 @@ struct TransactionListView: View {
                 ScrollView {
                     VStack(spacing: 10) {
                         // Кнопка завжди зверху
-                        HStack {
+                        HStack(alignment: .center) {
                             Spacer()
-
+                            
                             NavigationLink(destination: SettingsView(), isActive: $showSettings) {
                                 Button(action: {
                                     showSettings = true
@@ -109,10 +109,11 @@ struct TransactionListView: View {
                                         .resizable()
                                         .frame(width: 42, height: 42)
                                 }
-                                .padding(.top, 12)
-                                .padding(.trailing, 16)
                             }
+                            .padding(.trailing, 16)
+                            .padding(.top, 12)
                         }
+                        .frame(maxWidth: .infinity)
                         TabView(selection: $viewModel.selectedTypeIndex) {
                             ForEach(0..<viewModel.types.count, id: \ .self) { idx in
                                 VStack(spacing: 12) {
@@ -131,12 +132,14 @@ struct TransactionListView: View {
                         
                         CustomIndicator(selectedIndex: $viewModel.selectedTypeIndex)
                             .padding(.bottom, 8)
-                        
-                        // Блок категорій
-                        CategoriesWrapView(viewModel: _viewModel, sums: categorySums, showAddCategoryPopup: $viewModel.showAddCategoryPopup, addCategory: {
-                            viewModel.showAddCategoryPopup = true
-                        })
-                        .padding(.top, 8)
+                        HStack {
+                            // Блок категорій
+                            CategoriesWrapView(viewModel: _viewModel, sums: categorySums, showAddCategoryPopup: $viewModel.showAddCategoryPopup, addCategory: {
+                                viewModel.showAddCategoryPopup = true
+                            })
+                            .padding(.top, 8)
+                            Spacer()
+                        }
                         
                         NavigationLink(destination: HistoryView()) {
                             Image("showalllllll")
