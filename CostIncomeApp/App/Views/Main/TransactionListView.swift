@@ -73,6 +73,7 @@ struct TransactionListView: View {
     @State private var showingImagePicker = false
     @State private var capturedImageName: String?
     @State private var showingAddNewItem = false
+    let bigSize = UIScreen.main.bounds.size.width > 768
     #if canImport(UIKit)
     @State private var inputImage: UIImage?
     #endif
@@ -111,7 +112,7 @@ struct TransactionListView: View {
                                 }
                             }
                             .padding(.trailing, 16)
-                            .padding(.top, 12)
+                            .padding(.top, 20)
                         }
                         .frame(maxWidth: .infinity)
                         TabView(selection: $viewModel.selectedTypeIndex) {
@@ -154,7 +155,7 @@ struct TransactionListView: View {
                             if viewModel.filteredTransactions().isEmpty {
                                 Color.white
                                     .opacity(0.05)
-                                    .frame(height: 400)
+                                    .frame(height: 500)
                                 
                             } else {
                                 ScrollView {
@@ -205,7 +206,7 @@ struct TransactionListView: View {
                                         }
                                         Color.white
                                             .opacity(0.05)
-                                            .frame(height: 300)
+                                            .frame(height: 400)
                                     }
                                     .padding(.vertical, 8)
                                     .scrollIndicators(.hidden)
@@ -242,7 +243,7 @@ struct TransactionListView: View {
                         }) {
                             Image("Buuton-2")
                                 .resizable()
-                                .frame(width: UIScreen.main.bounds.width - 100, height: 78)
+                                .frame(width: UIScreen.main.bounds.width - 100, height: 85)
                         }
                     }
                     .padding(.bottom, 30)

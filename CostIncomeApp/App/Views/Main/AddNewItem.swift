@@ -165,7 +165,7 @@ struct AddNewItemView: View {
                             Text("+ Add")
                                 .foregroundColor(.white)
                                 .font(.custom("Rubik-Regular", size: 20))
-                                .frame(height: 50)
+                                .frame(height: 55)
                                 .frame(maxWidth: .infinity)
                                 .background(Color(hex: "8948FF"))
                                 .cornerRadius(15)
@@ -234,7 +234,7 @@ struct AddNewItemView: View {
                             }) {
                                 Text("Income")
                                     .foregroundColor(.white)
-                                    .frame(height: 50)
+                                    .frame(height: 55)
                                     .frame(maxWidth: .infinity)
                                     .background(Color(hex: "8948FF"))
                                     .font(.custom("Rubik-Regular", size: 20))
@@ -253,7 +253,7 @@ struct AddNewItemView: View {
                             }) {
                                 Image("dqwdqwedqwed1")
                                     .resizable()
-                                    .frame(width: UIScreen.main.bounds.width - 60, height: 50)
+                                    .frame(width: UIScreen.main.bounds.width - 60, height: 55)
                             }
                             .padding(.top, 12)
                             
@@ -262,7 +262,7 @@ struct AddNewItemView: View {
                             }) {
                                 Image("dqwdqwedqwed2")
                                     .resizable()
-                                    .frame(width: UIScreen.main.bounds.width - 60, height: 50)
+                                    .frame(width: UIScreen.main.bounds.width - 60, height: 55)
                             }
                             .padding(.top, 12)
                             
@@ -271,7 +271,7 @@ struct AddNewItemView: View {
                             }) {
                                 Image("dqwdqwedqwed3")
                                     .resizable()
-                                    .frame(width: UIScreen.main.bounds.width - 60, height: 50)
+                                    .frame(width: UIScreen.main.bounds.width - 60, height: 55)
                             }
                             .padding(.top, 12)
                         }
